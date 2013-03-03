@@ -48,8 +48,9 @@ namespace CarzoneApi
 
         public async Task<IEnumerable<Car>> GetCarsDeserialize(int numToGet)
         {
-            var getTotalsResponse = client.GetStringAsync(MakeGetCarsUrl(1, 1));
-            var totals = await JsonConvert.DeserializeObjectAsync<CarListResponse>(getTotalsResponse.Result);
+            var getTotalsResponse = await client.GetAsync(MakeGetCarsUrl(1, 10));
+            getTotalsResponse.EnsureSuccessStatusCode();
+            var totals = await JsonConvert.DeserializeObjectAsync<CarListResponse>(getTotalsResponse.Content.ReadAsStringAsync().Result);
 
             var numAvailable = totals.TotalAdvertCount;
             var max = Math.Min(numToGet, numAvailable);

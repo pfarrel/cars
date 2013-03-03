@@ -17,23 +17,22 @@ namespace Scraper
         {
             JsonApi carzoneApi = new JsonApi();
 
-            var cars = carzoneApi.GetCarsDeserialize(int.MaxValue).Result;
+            var cars = carzoneApi.GetCarsDeserialize(1000).Result;
 
             using (var context = new CarsContext())
             {
-                var listings = cars
-                    .Where(c => c.VehicleMake != null && c.VehicleModel != null)
-                    .Select(car => new Listing
-                    {
-                        Make = context.Makes.SingleOrDefault(m => m.Name == car.VehicleMake) ?? new Make { Name = car.VehicleMake },
-                        Model = context.Models.SingleOrDefault(m => m.Name == car.VehicleModel) ?? new Model { Name = car.VehicleModel },
-                        Description = car.VehicleDerivative,
-                        Price = car.VehiclePriceEuro
-                    }).ToList();
-
-                foreach (var listing in listings) { context.Listings.Add(listing); }
-
-                context.SaveChanges();
+                foreach (var car in cars)
+                {
+                    var listing = new Listing
+                        {
+                            Make = context.Makes.SingleOrDefault(m => m.Name == car.VehicleMake) ?? new Make { Name = car.VehicleMake },
+                            Model = context.Models.SingleOrDefault(m => m.Name == car.VehicleModel) ?? new Model { Name = car.VehicleModel },
+                            Description = car.VehicleDerivative,
+                            Price = car.VehiclePriceEuro
+                        };
+                    context.Listings.Add(listing);
+                    context.SaveChanges();
+                }
             }
         }
     }
