@@ -17,7 +17,7 @@ namespace Scraper
         {
             JsonApi carzoneApi = new JsonApi();
 
-            var cars = carzoneApi.GetCarsDS().Result;
+            var cars = carzoneApi.GetCarsDeserialize(int.MaxValue).Result;
 
             using (var context = new CarsContext())
             {

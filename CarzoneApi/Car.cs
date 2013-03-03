@@ -8,6 +8,7 @@ namespace CarzoneApi
 {
     public class CarListResponse
     {
+        public int TotalAdvertCount { get; set; }
         public List<Car> Adverts { get; set; }
     }
 

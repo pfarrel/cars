@@ -27,14 +27,14 @@ namespace CarzoneApi.Test
         [TestMethod]
         public async Task GetCars_JsWorks()
         {
-            var cars = await api.GetCarsDS();
+            var cars = await api.GetCarsDeserialize(1);
             Assert.IsTrue(cars.Count() > 0);
         }
 
         [TestMethod]
         public async Task GetCars_JsDeserializesAllValues()
         {
-            var cars = await api.GetCarsDS();
+            var cars = await api.GetCarsDeserialize(1);
             var car = cars.First();
 
             Assert.IsTrue(car.AdvertId > 1000);

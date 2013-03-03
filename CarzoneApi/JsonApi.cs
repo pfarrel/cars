@@ -14,6 +14,8 @@ namespace CarzoneApi
         private const string MakeModelsSuffix = "makeModelsJs?getResponseAsJson=true&requestor=cz";
         private const string GetCarsFormatSuffix = "json?startrow={0}&maxrows={1}&legacy_url=y&requestor=cz";
 
+        private const int MaxResultsToFetchAtOnce = 100;
+
         private string MakeModelsUrl { get { return BaseUrl + MakeModelsSuffix; } }
 
         private HttpClient client;
@@ -44,13 +46,25 @@ namespace CarzoneApi
             return BaseUrl + string.Format(GetCarsFormatSuffix, first, count);
         }
 
-        public async Task<IEnumerable<Car>> GetCarsDS()
+        public async Task<IEnumerable<Car>> GetCarsDeserialize(int numToGet)
         {
-            var response = client.GetStringAsync(MakeGetCarsUrl());
-            var responseWrapped = await JsonConvert.DeserializeObjectAsync<CarListResponse>(response.Result);
-            return responseWrapped.Adverts;
+            var getTotalsResponse = client.GetStringAsync(MakeGetCarsUrl(1, 1));
+            var totals = await JsonConvert.DeserializeObjectAsync<CarListResponse>(getTotalsResponse.Result);
+
+            var numAvailable = totals.TotalAdvertCount;
+            var max = Math.Min(numToGet, numAvailable);
+            int currentResult = 1;
+
+            List<Car> results = new List<Car>(max);
+            while (currentResult <= max)
+            {
+                var response = await client.GetStringAsync(MakeGetCarsUrl(currentResult, MaxResultsToFetchAtOnce));
+                var cars = await JsonConvert.DeserializeObjectAsync<CarListResponse>(response);
+                results.AddRange(cars.Adverts);
+                currentResult += MaxResultsToFetchAtOnce;
+            }
+
+            return results;
         }
-
-
     }
 }

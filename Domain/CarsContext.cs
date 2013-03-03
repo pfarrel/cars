@@ -15,7 +15,7 @@ namespace Domain
 
         public CarsContext() : base ("CarsContext")
         {
-            Database.SetInitializer(new DropCreateDatabaseAlways<CarsContext>());
+            Database.SetInitializer(new DropCreateDatabaseIfModelChanges<CarsContext>());
         }
     }
 }
