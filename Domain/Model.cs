@@ -7,16 +7,11 @@ using System.Threading.Tasks;
 
 namespace Domain
 {
-    class Model
+    public class Model
     {
-        [Key]
         public int Id { get; set; }
 
         [Required]
         public string Name { get; set; }
-
-        [Required]
-        public int MakeId { get; set; }
-        public virtual Make Make { get; set; }
     }
 }

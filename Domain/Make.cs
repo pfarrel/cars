@@ -9,7 +9,6 @@ namespace Domain
 {
     public class Make
     {
-        [Key]
         public int Id { get; set; }
 
         [Required]

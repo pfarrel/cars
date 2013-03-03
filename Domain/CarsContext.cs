@@ -10,10 +10,12 @@ namespace Domain
     public class CarsContext : DbContext
     {
         public DbSet<Make> Makes { get; set; }
+        public DbSet<Model> Models { get; set; }
+        public DbSet<Listing> Listings { get; set; }
 
         public CarsContext() : base ("CarsContext")
         {
-            Database.SetInitializer(new DropCreateDatabaseIfModelChanges<CarsContext>());
+            Database.SetInitializer(new DropCreateDatabaseAlways<CarsContext>());
         }
     }
 }
