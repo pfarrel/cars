@@ -10,9 +10,9 @@ namespace CarzoneApi.Test
     {
         JsonApi api = new JsonApi();
         [TestMethod]
-        public async Task GetTotals_LooksRight()
+        public async Task GetMakeModels_LooksRight()
         {
-            var responseString = await api.GetTotals();
+            var responseString = await api.GetMakeModels();
             Assert.IsTrue(responseString.Contains("Lexus"));
         }
 
