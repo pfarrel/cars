@@ -8,13 +8,20 @@ namespace CarzoneApi.Test
     [TestClass]
     public class JsonApiTest
     {
+        JsonApi api = new JsonApi();
         [TestMethod]
-        public async Task TestMethod1()
+        public async Task GetTotals_LooksRight()
         {
-            var api = new JsonApi();
-
             var responseString = await api.GetTotals();
-            var a = 1;
+            Assert.IsTrue(responseString.Contains("Lexus"));
         }
+
+        [TestMethod]
+        public async Task GetCars_LooksRight()
+        {
+            var responseString = await api.GetCars();
+            Assert.IsTrue(responseString.Contains("vehicle"));
+        }
+
     }
 }
