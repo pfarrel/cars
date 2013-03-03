@@ -13,6 +13,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scraper", "Scraper\Scraper.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scraper.Test", "Scraper.Test\Scraper.Test.csproj", "{663DB39F-2A26-4AD6-9696-BD6D8720DAD7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Web", "Web\Web.csproj", "{6601A9A8-7A9A-4375-A6F4-086157EAB675}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Web.Tests", "Web.Tests\Web.Tests.csproj", "{2EAD30CC-2A60-4CA9-BEA2-8DD02573867F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -43,6 +47,14 @@ Global
 		{663DB39F-2A26-4AD6-9696-BD6D8720DAD7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{663DB39F-2A26-4AD6-9696-BD6D8720DAD7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{663DB39F-2A26-4AD6-9696-BD6D8720DAD7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6601A9A8-7A9A-4375-A6F4-086157EAB675}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6601A9A8-7A9A-4375-A6F4-086157EAB675}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6601A9A8-7A9A-4375-A6F4-086157EAB675}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6601A9A8-7A9A-4375-A6F4-086157EAB675}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2EAD30CC-2A60-4CA9-BEA2-8DD02573867F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2EAD30CC-2A60-4CA9-BEA2-8DD02573867F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2EAD30CC-2A60-4CA9-BEA2-8DD02573867F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2EAD30CC-2A60-4CA9-BEA2-8DD02573867F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
