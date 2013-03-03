@@ -5,6 +5,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CarzoneApi", "CarzoneApi\Ca
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CarzoneApi.Test", "CarzoneApi.Test\CarzoneApi.Test.csproj", "{4378221C-CD10-4D00-A8A9-C148C733E85B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain", "Domain\Domain.csproj", "{17222F8C-D4F9-430B-AF70-760F7420AB06}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain.Test", "Domain.Test\Domain.Test.csproj", "{48526A8F-5486-4BF8-A857-F00D8B9BC161}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -19,6 +23,14 @@ Global
 		{4378221C-CD10-4D00-A8A9-C148C733E85B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4378221C-CD10-4D00-A8A9-C148C733E85B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4378221C-CD10-4D00-A8A9-C148C733E85B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{17222F8C-D4F9-430B-AF70-760F7420AB06}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{17222F8C-D4F9-430B-AF70-760F7420AB06}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{17222F8C-D4F9-430B-AF70-760F7420AB06}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{17222F8C-D4F9-430B-AF70-760F7420AB06}.Release|Any CPU.Build.0 = Release|Any CPU
+		{48526A8F-5486-4BF8-A857-F00D8B9BC161}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{48526A8F-5486-4BF8-A857-F00D8B9BC161}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{48526A8F-5486-4BF8-A857-F00D8B9BC161}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{48526A8F-5486-4BF8-A857-F00D8B9BC161}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
