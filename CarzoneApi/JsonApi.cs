@@ -12,10 +12,9 @@ namespace CarzoneApi
     {
         private const string BaseUrl = "http://www.carzone.ie/es-ie/search/";
         private const string MakeModelsSuffix = "makeModelsJs?getResponseAsJson=true&requestor=cz";
-        private const string GetCarsFormatSuffix = "json?startrow=1&maxrows=10&legacy_url=y&requestor=cz";
+        private const string GetCarsFormatSuffix = "json?startrow={0}&maxrows={1}&legacy_url=y&requestor=cz";
 
         private string MakeModelsUrl { get { return BaseUrl + MakeModelsSuffix; } }
-        private string GetCarsUrl { get { return BaseUrl + GetCarsFormatSuffix; } }
 
         private HttpClient client;
 
@@ -34,10 +33,24 @@ namespace CarzoneApi
 
         public async Task<string> GetCars()
         {
-            var response = await client.GetAsync(GetCarsUrl);
+            var response = await client.GetAsync(MakeGetCarsUrl());
 
             response.EnsureSuccessStatusCode();
             return await response.Content.ReadAsStringAsync();
         }
+
+        private string MakeGetCarsUrl(int first = 1, int count = 10)
+        {
+            return BaseUrl + string.Format(GetCarsFormatSuffix, first, count);
+        }
+
+        public async Task<IEnumerable<Car>> GetCarsDS()
+        {
+            var response = client.GetStringAsync(MakeGetCarsUrl());
+            var responseWrapped = await JsonConvert.DeserializeObjectAsync<CarListResponse>(response.Result);
+            return responseWrapped.Adverts;
+        }
+
+
     }
 }

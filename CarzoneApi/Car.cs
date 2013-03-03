@@ -6,7 +6,12 @@ using System.Threading.Tasks;
 
 namespace CarzoneApi
 {
-    class Car
+    public class CarListResponse
+    {
+        public List<Car> Adverts { get; set; }
+    }
+
+    public class Car
     {
         public long AdvertId { get; set; }
         public string AdvertiserCounty { get; set; }
@@ -15,6 +20,6 @@ namespace CarzoneApi
         public string VehicleModel { get; set; }
         public string VehicleDerivative { get; set; }
         public int VehiclePriceEuro { get; set; }
-        public int VehicleYearManufacture { get; set; }
+        public int VehicleYearOfManufacture { get; set; }
     }
 }
