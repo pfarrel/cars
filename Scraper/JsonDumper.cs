@@ -29,7 +29,8 @@ namespace Scraper
                             Make = l.Make.Name,
                             Model = l.Model.Name,
                             Price = l.Price,
-                            Description = l.Price,
+                            Year = l.Year,
+                            Description = l.Description,
                         }).ToList();
             using (FileStream fs = File.Open(fileName, FileMode.OpenOrCreate))
             using (StreamWriter sw = new StreamWriter(fs))
@@ -38,7 +39,7 @@ namespace Scraper
                 jw.Formatting = Formatting.Indented;
 
                 JsonSerializer serializer = new JsonSerializer();
-                serializer.Serialize(jw, stuff);
+                serializer.Serialize(jw, flattened);
             }
         }
     }

@@ -20,6 +20,9 @@ namespace Domain
         public virtual Model Model { get; set; }
 
         [Required]
+        public int Year { get; set; }
+
+        [Required]
         public int Price { get; set; }
 
         public string Description { get; set; }
