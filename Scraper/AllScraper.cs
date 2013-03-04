@@ -53,7 +53,7 @@ namespace Scraper
 
             carzoneListings = carzoneListings.Where(cl => cl.VehicleMake != null && cl.VehicleModel != null).ToList();
 
-            for (int i = 0; i < carzoneListings.Count(); i++)
+            for (int i = 0; i < carzoneListings.Count(); i += 100)
             {
                 using (var context = new CarsContext())
                 {
