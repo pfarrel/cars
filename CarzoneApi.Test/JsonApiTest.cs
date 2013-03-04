@@ -4,6 +4,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using CarzoneApi;
 using System.Threading.Tasks;
 using System.IO;
+using Newtonsoft.Json;
 
 namespace CarzoneApi.Test
 {
@@ -15,7 +16,7 @@ namespace CarzoneApi.Test
         [TestMethod]
         public void GetListingsStrings_LooksRight()
         {
-            var responseString = api.GetListingsStrings(1,1);
+            var responseString = api.GetListingsStrings(1, 1);
             Assert.IsTrue(responseString.Contains("vehicle"));
         }
 
@@ -44,7 +45,7 @@ namespace CarzoneApi.Test
         }
 
         [TestMethod]
-        public async Task GetCars_SaveApiOutput()
+        public void GetListings_SaveApiOutput()
         {
             var strings = api.GetListingsStrings(1, int.MaxValue).ToList();
 

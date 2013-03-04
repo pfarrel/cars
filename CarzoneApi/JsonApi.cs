@@ -69,7 +69,7 @@ namespace CarzoneApi
             return BaseUrl + string.Format(GetCarsFormatSuffix, first, count);
         }
 
-        private IEnumerable<CarzoneListing> Deserialize(string json)
+        public IEnumerable<CarzoneListing> Deserialize(string json)
         {
             var listings = JsonConvert.DeserializeObject<CarzoneJsonResponse>(json);
             return listings.Adverts;
