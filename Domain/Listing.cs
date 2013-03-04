@@ -25,6 +25,9 @@ namespace Domain
         [Required]
         public int Price { get; set; }
 
+        public int LocationId { get; set; }
+        public virtual Location Location { get; set; }
+
         public string Description { get; set; }
     }
 }

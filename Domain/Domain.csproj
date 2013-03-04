@@ -46,6 +46,7 @@
   <ItemGroup>
     <Compile Include="CarsContext.cs" />
     <Compile Include="Listing.cs" />
+    <Compile Include="Location.cs" />
     <Compile Include="Make.cs" />
     <Compile Include="Model.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

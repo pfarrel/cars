@@ -53,18 +53,46 @@ namespace Scraper
 
             carzoneListings = carzoneListings.Where(cl => cl.VehicleMake != null && cl.VehicleModel != null).ToList();
 
-            using (var context = new CarsContext())
+            for (int i = 0; i < carzoneListings.Count(); i++)
             {
-                foreach (var carzoneListing in carzoneListings)
+                using (var context = new CarsContext())
                 {
-                    var listing = new Listing
+                    for (int j = i; j < i + 100 && j < carzoneListings.Count(); j++)
                     {
-                        Make = context.Makes.SingleOrDefault(m => m.Name == carzoneListing.VehicleMake) ?? new Make { Name = carzoneListing.VehicleMake },
-                        Model = context.Models.SingleOrDefault(m => m.Name == carzoneListing.VehicleModel) ?? new Model { Name = carzoneListing.VehicleModel },
-                        Description = carzoneListing.VehicleDerivative,
-                        Price = carzoneListing.VehiclePriceEuro
-                    };
-                    context.Listings.Add(listing);
+                        var carzoneListing = carzoneListings[j];
+
+                        var make = context.Makes.SingleOrDefault(m => m.Name.ToLower() == carzoneListing.VehicleMake.ToLower());
+                        if (make == null) 
+                        { 
+                            make = context.Makes.Add(new Make { Name = carzoneListing.VehicleMake }); 
+                            context.SaveChanges(); 
+                        }
+
+                        var model = context.Models.SingleOrDefault(m => m.Name.ToLower() == carzoneListing.VehicleModel.ToLower());
+                        if (model == null)
+                        {
+                            model  = context.Models.Add(new Model { Name = carzoneListing.VehicleModel });
+                            context.SaveChanges();
+                        }
+
+                        var location = context.Locations.SingleOrDefault(m => m.Name.ToLower() == carzoneListing.AdvertiserCounty.ToLower());
+                        if (location == null)
+                        {
+                            location = context.Locations.Add(new Location { Name = carzoneListing.AdvertiserCounty });
+                            context.SaveChanges();
+                        }
+
+                        var listing = new Listing
+                        {
+                            Make = make,
+                            Model = model,
+                            Location = location,
+                            Description = carzoneListing.VehicleDerivative,
+                            Price = carzoneListing.VehiclePriceEuro,
+                            Year = carzoneListing.VehicleYearOfManufacture
+                        };
+                        context.Listings.Add(listing);
+                    }
                     context.SaveChanges();
                 }
             }
