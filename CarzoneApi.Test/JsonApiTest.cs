@@ -3,6 +3,7 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using CarzoneApi;
 using System.Threading.Tasks;
+using System.IO;
 
 namespace CarzoneApi.Test
 {
@@ -10,31 +11,25 @@ namespace CarzoneApi.Test
     public class JsonApiTest
     {
         JsonApi api = new JsonApi();
-        [TestMethod]
-        public async Task GetMakeModels_LooksRight()
-        {
-            var responseString = await api.GetMakeModels();
-            Assert.IsTrue(responseString.Contains("Lexus"));
-        }
 
         [TestMethod]
-        public async Task GetCars_LooksRight()
+        public void GetListingsStrings_LooksRight()
         {
-            var responseString = await api.GetCars();
+            var responseString = api.GetListingsStrings(1,1);
             Assert.IsTrue(responseString.Contains("vehicle"));
         }
 
         [TestMethod]
-        public async Task GetCars_JsWorks()
+        public void GetListings_Deserializes()
         {
-            var cars = await api.GetCarsDeserialize(1);
-            Assert.IsTrue(cars.Count() > 0);
+            var cars = api.GetListings(1, 10);
+            Assert.IsTrue(cars.Count() == 10);
         }
 
         [TestMethod]
-        public async Task GetCars_JsDeserializesAllValues()
+        public void GetListings_DeserializesAllValues()
         {
-            var cars = await api.GetCarsDeserialize(1);
+            var cars = api.GetListings(1, 1);
             var car = cars.First();
 
             Assert.IsTrue(car.AdvertId > 1000);
@@ -46,6 +41,20 @@ namespace CarzoneApi.Test
             Assert.IsTrue(car.VehicleYearOfManufacture > 1900);
 
             //Assert.IsTrue(car.VehiclePriceEuro > 0);
+        }
+
+        [TestMethod]
+        public async Task GetCars_SaveApiOutput()
+        {
+            var strings = api.GetListingsStrings(1, int.MaxValue).ToList();
+
+            for (int i = 0; i < strings.Count(); i++)
+            {
+                using (var tw = File.CreateText(string.Format("jsondump{0}.json", i)))
+                {
+                    tw.Write(strings[i]);
+                }
+            }
         }
     }
 }

@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 
 namespace CarzoneApi
 {
-    public class CarListResponse
+    public class CarzoneJsonResponse
     {
         public int TotalAdvertCount { get; set; }
-        public List<Car> Adverts { get; set; }
+        public List<CarzoneListing> Adverts { get; set; }
     }
 
-    public class Car
+    public class CarzoneListing
     {
         public long AdvertId { get; set; }
         public string AdvertiserCounty { get; set; }

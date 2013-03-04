@@ -11,12 +11,9 @@ namespace CarzoneApi
     public class JsonApi
     {
         private const string BaseUrl = "http://www.carzone.ie/es-ie/search/";
-        private const string MakeModelsSuffix = "makeModelsJs?getResponseAsJson=true&requestor=cz";
         private const string GetCarsFormatSuffix = "json?startrow={0}&maxrows={1}&legacy_url=y&requestor=cz";
 
         private const int MaxResultsToFetchAtOnce = 100;
-
-        private string MakeModelsUrl { get { return BaseUrl + MakeModelsSuffix; } }
 
         private HttpClient client;
 
@@ -25,47 +22,57 @@ namespace CarzoneApi
             client = new HttpClient();
         }
 
-        public async Task<string> GetMakeModels()
+        public IEnumerable<CarzoneListing> GetListings(int first, int count)
         {
-            var response = await client.GetAsync(MakeModelsUrl);
-
-            response.EnsureSuccessStatusCode();
-            return await response.Content.ReadAsStringAsync();
+            var strings = GetListingsStrings(first, count);
+            return strings.SelectMany(Deserialize);
         }
 
-        public async Task<string> GetCars()
+        public IEnumerable<string> GetListingsStrings(int first, int count)
         {
-            var response = await client.GetAsync(MakeGetCarsUrl());
+            // Do initial request just to read totals from it
+            var getTotalsResponse = MakeRequest(MakeGetListingsUrl(1, 10));
+            var totals = JsonConvert.DeserializeObject<CarzoneJsonResponse>(getTotalsResponse);
 
-            response.EnsureSuccessStatusCode();
-            return await response.Content.ReadAsStringAsync();
+            var available = totals.TotalAdvertCount;
+            var toFetch = Math.Min(count, (available - first) + 1);
+            int currentResult = first;
+
+            var results = new List<string>(toFetch);
+
+            while (currentResult <= toFetch)
+            {
+                // +1 for case where current and available are equal, we still have to fetch one
+                int fetchThisTime = Math.Min((available - currentResult) + 1, MaxResultsToFetchAtOnce);
+                var jsonString = MakeRequest(MakeGetListingsUrl(currentResult, fetchThisTime));
+                results.Add(jsonString);
+                currentResult += fetchThisTime;
+            }
+
+            return results;
         }
 
-        private string MakeGetCarsUrl(int first = 1, int count = 10)
+        private string MakeRequest(string url)
+        {
+            var response = client.GetAsync(url).Result;
+            response.EnsureSuccessStatusCode();
+            if (response.StatusCode == System.Net.HttpStatusCode.NoContent)
+            {
+                throw new ApplicationException("Request failed - rate limited or blocked (204 No Content)");
+            }
+
+            return response.Content.ReadAsStringAsync().Result;
+        }
+
+        private string MakeGetListingsUrl(int first, int count)
         {
             return BaseUrl + string.Format(GetCarsFormatSuffix, first, count);
         }
 
-        public async Task<IEnumerable<Car>> GetCarsDeserialize(int numToGet)
+        private IEnumerable<CarzoneListing> Deserialize(string json)
         {
-            var getTotalsResponse = await client.GetAsync(MakeGetCarsUrl(1, 10));
-            getTotalsResponse.EnsureSuccessStatusCode();
-            var totals = await JsonConvert.DeserializeObjectAsync<CarListResponse>(getTotalsResponse.Content.ReadAsStringAsync().Result);
-
-            var numAvailable = totals.TotalAdvertCount;
-            var max = Math.Min(numToGet, numAvailable);
-            int currentResult = 1;
-
-            List<Car> results = new List<Car>(max);
-            while (currentResult <= max)
-            {
-                var response = await client.GetStringAsync(MakeGetCarsUrl(currentResult, MaxResultsToFetchAtOnce));
-                var cars = await JsonConvert.DeserializeObjectAsync<CarListResponse>(response);
-                results.AddRange(cars.Adverts);
-                currentResult += MaxResultsToFetchAtOnce;
-            }
-
-            return results;
+            var listings = JsonConvert.DeserializeObject<CarzoneJsonResponse>(json);
+            return listings.Adverts;
         }
     }
 }
