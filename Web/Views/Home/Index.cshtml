@@ -8,43 +8,74 @@
 
 <h2>Index</h2>
 
+<input type="text" name="make" value="" />
+<input type="text" name="model" value="" />
+<input type="text" name="maxPrice" value="" />
+
+<input type="button" name="draw" onclick="drawClick()" value="Draw" />
+
 <div id="chart" style="padding: 20px">
 
 </div>
 
 <script>
-    var margin = { top: 30, right: 30, bottom: 40, left: 50 },
-    width = 960 - margin.left - margin.right,
-    height = 500 - margin.top - margin.bottom;
+    globalData = null;
 
-    var x = d3.scale.linear()
-        .range([0, width]);
-
-    var y = d3.scale.linear()
-        .range([height, 0]);
-
-    var color = d3.scale.category10();
-
-    var xAxis = d3.svg.axis()
-        .scale(x)
-        .orient("bottom");
-
-    var yAxis = d3.svg.axis()
-        .scale(y)
-        .orient("left");
-
-    var svg = d3.select("#chart").append("svg")
-        .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom)
-      .append("g")
-        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-    d3.json("/Data/dump.js", function (errpr, data) {
-
+    d3.json("/Data/data.js", function (error, data) {
         data.forEach(function (d) {
             d.Price = +d.Price;
             d.Year = +d.Year;
         });
+
+        globalData = data;
+    });
+
+    function drawClick() {
+        var filteredData = globalData;
+
+        filteredData = filteredData.filter(function (d) { return d.Price < 50000; });
+
+        var make = $("input[name='make']").val();
+        if (make !== "") {
+            filteredData = filteredData.filter(function(d) { return d.Make === make; });
+        }
+
+        var model = $("input[name='model']").val();
+        if (model !== "") {
+            filteredData = filteredData.filter(function (d) { return d.Model === model; });
+        }
+
+        drawChart(filteredData);
+    }
+
+    function drawChart(data) {
+        $("#chart").empty();
+
+        var margin = { top: 30, right: 30, bottom: 40, left: 80 },
+        width = 960 - margin.left - margin.right,
+        height = 500 - margin.top - margin.bottom;
+
+        var x = d3.scale.linear()
+            .range([0, width]);
+
+        var y = d3.scale.linear()
+            .range([height, 0]);
+
+        var color = d3.scale.category10();
+
+        var xAxis = d3.svg.axis()
+            .scale(x)
+            .orient("bottom");
+
+        var yAxis = d3.svg.axis()
+            .scale(y)
+            .orient("left");
+
+        var svg = d3.select("#chart").append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+          .append("g")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
         var yearExtents = d3.extent(data, function (d) { return d.Year; });
         yearExtents[0]--;
@@ -102,5 +133,5 @@
             .attr("dy", ".35em")
             .style("text-anchor", "end")
             .text(function (d) { return d; });
-    });
+    }
 </script>
