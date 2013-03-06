@@ -8,7 +8,7 @@ using Newtonsoft.Json;
 
 namespace Scraper
 {
-    public class JsonApi
+    public class CarzoneApi
     {
         private const string BaseUrl = "http://www.carzone.ie/es-ie/search/";
         private const string GetCarsFormatSuffix = "json?startrow={0}&maxrows={1}&legacy_url=y&requestor=cz";
@@ -17,12 +17,12 @@ namespace Scraper
 
         private HttpClient client;
 
-        public JsonApi()
+        public CarzoneApi()
         {
             client = new HttpClient();
         }
 
-        public IEnumerable<CarzoneListing> GetListings(int first, int count)
+        public IEnumerable<CarzoneSearchListing> GetListings(int first, int count)
         {
             var strings = GetListingsStrings(first, count);
             return strings.SelectMany(Deserialize);
@@ -32,7 +32,7 @@ namespace Scraper
         {
             // Do initial request just to read totals from it
             var getTotalsResponse = MakeRequest(MakeGetListingsUrl(1, 10));
-            var totals = JsonConvert.DeserializeObject<CarzoneJsonResponse>(getTotalsResponse);
+            var totals = JsonConvert.DeserializeObject<CarzoneSearchResponse>(getTotalsResponse);
 
             var available = totals.TotalAdvertCount;
             var toFetch = Math.Min(count, (available - first) + 1);
@@ -43,7 +43,7 @@ namespace Scraper
             while (currentResult <= toFetch)
             {
                 // +1 for case where current and available are equal, we still have to fetch one
-                int fetchThisTime = Math.Min((available - currentResult) + 1, MaxResultsToFetchAtOnce);
+                int fetchThisTime = Math.Min((toFetch - currentResult) + 1, MaxResultsToFetchAtOnce);
                 var jsonString = MakeRequest(MakeGetListingsUrl(currentResult, fetchThisTime));
                 results.Add(jsonString);
                 currentResult += fetchThisTime;
@@ -69,10 +69,28 @@ namespace Scraper
             return BaseUrl + string.Format(GetCarsFormatSuffix, first, count);
         }
 
-        public IEnumerable<CarzoneListing> Deserialize(string json)
+        public IEnumerable<CarzoneSearchListing> Deserialize(string json)
         {
-            var listings = JsonConvert.DeserializeObject<CarzoneJsonResponse>(json);
+            var listings = JsonConvert.DeserializeObject<CarzoneSearchResponse>(json);
             return listings.Adverts;
         }
+    }
+
+    public class CarzoneSearchResponse
+    {
+        public int TotalAdvertCount { get; set; }
+        public List<CarzoneSearchListing> Adverts { get; set; }
+    }
+
+    public class CarzoneSearchListing
+    {
+        public long AdvertId { get; set; }
+        public string AdvertiserCounty { get; set; }
+        public string AdvertiserName { get; set; }
+        public string VehicleMake { get; set; }
+        public string VehicleModel { get; set; }
+        public string VehicleDerivative { get; set; }
+        public int VehiclePriceEuro { get; set; }
+        public int VehicleYearOfManufacture { get; set; }
     }
 }

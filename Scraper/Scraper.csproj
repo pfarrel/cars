@@ -53,7 +53,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CarzoneListing.cs" />
-    <Compile Include="JsonApi.cs" />
+    <Compile Include="CarzoneApi.cs" />
     <Compile Include="JsonDumper.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

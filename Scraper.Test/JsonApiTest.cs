@@ -11,7 +11,7 @@ namespace Scraper.Test
     [TestClass]
     public class JsonApiTest
     {
-        JsonApi api = new JsonApi();
+        CarzoneApi api = new CarzoneApi();
 
         [TestMethod]
         public void GetListingsStrings_LooksRight()

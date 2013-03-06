@@ -15,7 +15,7 @@ namespace Scraper
     {
         public void Scrape()
         {
-            JsonApi carzoneApi = new JsonApi();
+            CarzoneApi carzoneApi = new CarzoneApi();
 
             var cars = carzoneApi.GetListings(1, 1000);
 
@@ -38,11 +38,11 @@ namespace Scraper
 
         public void Scrape2()
         {
-            JsonApi carzoneApi = new JsonApi();
+            CarzoneApi carzoneApi = new CarzoneApi();
 
             var dumpFiles = Directory.GetFiles(@"C:\dev\cars\CarzoneApi.Test\bin\Debug", "jsondump*");
 
-            var carzoneListings = new List<CarzoneListing>(50000);
+            var carzoneListings = new List<CarzoneSearchListing>(50000);
             foreach (var path in dumpFiles)
             {
                 var text = File.ReadAllText(path);
