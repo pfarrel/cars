@@ -1,6 +1,7 @@
 ﻿<!doctype html>
 <html>
 	<head>
+        <title>Cars</title>
 		<meta charset="utf-8">
 		<script src="http://d3js.org/d3.v3.min.js"></script>
 		<script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
@@ -29,16 +30,18 @@
 				{{/each}}
 			</ul>
 		</script>
-	</body>
-<input type="text" name="make" value="" />
-<input type="text" name="model" value="" />
-<input type="text" name="maxPrice" value="" />
 
-<input type="button" name="draw" onclick="drawClick()" value="Draw" />
+        <input type="text" name="make" value="" />
+        <input type="text" name="model" value="" />
+        <input type="text" name="maxPrice" value="" />
 
-<div id="chart" style="padding: 20px">
+        <input type="button" name="draw" onclick="drawClick()" value="Draw" />
 
-</div>
+        <div id="chart" style="padding: 20px">
+
+        </div>
+    </body>
+</html>
 
 <script>
 	d3.json("Data/data.js", function (error, data) {
@@ -46,7 +49,7 @@
 			d.Price = +d.Price;
 			d.Year = +d.Year;
 		});
-		window.globalData = data;
+		window.globalData = data.slice(0, 100);
 		dataReady();
 	});
 
@@ -186,5 +189,4 @@
 				.text(function (d) { return d; });
 		}
 	}
-	
 </script>

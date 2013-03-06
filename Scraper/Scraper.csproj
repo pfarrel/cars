@@ -43,6 +43,8 @@
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data.Entity" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Net.Http.WebRequest" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -50,6 +52,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CarzoneListing.cs" />
+    <Compile Include="JsonApi.cs" />
     <Compile Include="JsonDumper.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -60,10 +64,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\CarzoneApi\CarzoneApi.csproj">
-      <Project>{e84ac31e-f9e2-47d2-9e86-2ac17d5cc881}</Project>
-      <Name>CarzoneApi</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Domain\Domain.csproj">
       <Project>{17222f8c-d4f9-430b-af70-760f7420ab06}</Project>
       <Name>Domain</Name>

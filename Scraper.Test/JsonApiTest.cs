@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using CarzoneApi;
+using Scraper;
 using System.Threading.Tasks;
 using System.IO;
 using Newtonsoft.Json;
 
-namespace CarzoneApi.Test
+namespace Scraper.Test
 {
     [TestClass]
     public class JsonApiTest
