@@ -26,8 +26,10 @@ namespace Scraper
         {
             var flattened = stuff.Select(l => new
                 {
+                    Source = l.Source.ToString(),
                     Make = l.Make.Name,
                     Model = l.Model.Name,
+                    Mileage = l.Mileage,
                     Price = l.Price,
                     Year = l.Year,
                     Description = l.Description,
