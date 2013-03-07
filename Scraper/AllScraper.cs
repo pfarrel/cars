@@ -7,50 +7,26 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Scraper.CarsIreland;
 using Domain;
+using System.Globalization;
 
 namespace Scraper
 {
     public class AllScraper
     {
-        public void Scrape()
+        public void LoadCarzoneFromJson()
         {
-            CarzoneApi carzoneApi = new CarzoneApi();
+            var carzoneApi = new CarzoneApi();
 
-            var cars = carzoneApi.GetListings(1, 1000);
+            var dumpFiles = Directory.GetFiles(@"C:\dev\cars\Scraper.Test\bin\Debug", "jsondump*");
 
-            using (var context = new CarsContext())
-            {
-                foreach (var car in cars)
-                {
-                    var listing = new Listing
-                        {
-                            Make = context.Makes.SingleOrDefault(m => m.Name == car.VehicleMake) ?? new Make { Name = car.VehicleMake },
-                            Model = context.Models.SingleOrDefault(m => m.Name == car.VehicleModel) ?? new Model { Name = car.VehicleModel },
-                            Description = car.VehicleDerivative,
-                            Price = car.VehiclePriceEuro
-                        };
-                    context.Listings.Add(listing);
-                    context.SaveChanges();
-                }
-            }
-        }
-
-        public void Scrape2()
-        {
-            CarzoneApi carzoneApi = new CarzoneApi();
-
-            var dumpFiles = Directory.GetFiles(@"C:\dev\cars\CarzoneApi.Test\bin\Debug", "jsondump*");
-
-            var carzoneListings = new List<CarzoneSearchListing>(50000);
-            foreach (var path in dumpFiles)
-            {
-                var text = File.ReadAllText(path);
-                var ds = carzoneApi.Deserialize(text);
-                carzoneListings.AddRange(ds);
-            }
-
-            carzoneListings = carzoneListings.Where(cl => cl.VehicleMake != null && cl.VehicleModel != null).ToList();
+            var carzoneListings = dumpFiles
+                .AsParallel()
+                .Select(path => File.ReadAllText(path))
+                .SelectMany(text => carzoneApi.Deserialize(text))
+                .Where(cl => cl.VehicleMake != null && cl.VehicleModel != null)
+                .ToList();
 
             for (int i = 0; i < carzoneListings.Count(); i += 100)
             {
@@ -60,36 +36,61 @@ namespace Scraper
                     {
                         var carzoneListing = carzoneListings[j];
 
-                        var make = context.Makes.SingleOrDefault(m => m.Name.ToLower() == carzoneListing.VehicleMake.ToLower());
-                        if (make == null) 
+                        var listing = new Listing(context,
+                            SourceSite.Carzone,
+                            carzoneListing.AdvertId.ToString(),
+                            carzoneListing.VehicleMake,
+                            carzoneListing.VehicleModel,
+                            carzoneListing.VehicleYearOfManufacture,
+                            carzoneListing.VehiclePriceEuro,
+                            -1,
+                            carzoneListing.AdvertiserCounty,
+                            carzoneListing.VehicleDerivative);
+
+                        context.Listings.Add(listing);
+                    }
+                    context.SaveChanges();
+                }
+            }
+        }
+
+        public void LoadCarsIrelandFromJson()
+        {
+            var carsIrelandApi = new CarsIrelandApi();
+
+            var dumpFiles = Directory.GetFiles(@"C:\dev\cars\Scraper.Test\bin\Debug", "carsirelandjsondump*");
+
+            var listings = dumpFiles
+                .AsParallel()
+                .Select(path => File.ReadAllText(path))
+                .SelectMany(text => carsIrelandApi.Deserialize(text))
+                .ToList();
+
+            for (int i = 0; i < listings.Count(); i += 100)
+            {
+                using (var context = new CarsContext())
+                {
+                    for (int j = i; j < i + 100 && j < listings.Count(); j++)
+                    {
+                        var carsIrelandListing = listings[j];
+
+                        int price;
+                        if (!int.TryParse(carsIrelandListing.Price, NumberStyles.Currency, CultureInfo.InstalledUICulture, out price)) 
                         { 
-                            make = context.Makes.Add(new Make { Name = carzoneListing.VehicleMake }); 
-                            context.SaveChanges(); 
+                            price = -1;
                         }
 
-                        var model = context.Models.SingleOrDefault(m => m.Name.ToLower() == carzoneListing.VehicleModel.ToLower());
-                        if (model == null)
-                        {
-                            model  = context.Models.Add(new Model { Name = carzoneListing.VehicleModel });
-                            context.SaveChanges();
-                        }
+                        var listing = new Listing(context,
+                            SourceSite.CarsIreland,
+                            carsIrelandListing.Ad_Id.ToString(),
+                            carsIrelandListing.Make,
+                            carsIrelandListing.Model,
+                            carsIrelandListing.Reg_Year,
+                            price,
+                            carsIrelandListing.Mileage ?? -1,
+                            carsIrelandListing.Location,
+                            carsIrelandListing.Variant);
 
-                        var location = context.Locations.SingleOrDefault(m => m.Name.ToLower() == carzoneListing.AdvertiserCounty.ToLower());
-                        if (location == null)
-                        {
-                            location = context.Locations.Add(new Location { Name = carzoneListing.AdvertiserCounty });
-                            context.SaveChanges();
-                        }
-
-                        var listing = new Listing
-                        {
-                            Make = make,
-                            Model = model,
-                            Location = location,
-                            Description = carzoneListing.VehicleDerivative,
-                            Price = carzoneListing.VehiclePriceEuro,
-                            Year = carzoneListing.VehicleYearOfManufacture
-                        };
                         context.Listings.Add(listing);
                     }
                     context.SaveChanges();

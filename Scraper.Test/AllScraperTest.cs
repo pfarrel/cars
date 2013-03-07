@@ -11,11 +11,11 @@ namespace Scraper.Test
     public class AllScraperTest
     {
         [TestMethod]
-        public void Scrape_Works()
+        public void LoadCarzoneFromJson_Works()
         {
             var scraper = new AllScraper();
 
-            scraper.Scrape();
+            scraper.LoadCarzoneFromJson();
 
             using (var context = new CarsContext())
             {
@@ -24,11 +24,11 @@ namespace Scraper.Test
         }
 
         [TestMethod]
-        public void Scrape2_Works()
+        public void LoadCarsIrelandFromJson_Works()
         {
             var scraper = new AllScraper();
 
-            scraper.Scrape2();
+            scraper.LoadCarsIrelandFromJson();
 
             using (var context = new CarsContext())
             {
