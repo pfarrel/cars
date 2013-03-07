@@ -27,19 +27,13 @@ namespace Scraper.CarsIreland
         public IEnumerable<CarsIrelandSearchListing> GetListings(int page = 1)
         {
             var strings = GetListingsString(page);
-            return JsonConvert.DeserializeObject<SearchResponse>(strings).Result;
+            return Deserialize(strings);
         }
 
-        public IEnumerable<CarsIrelandSearchListing> GetXListings()
+        public IEnumerable<CarsIrelandSearchListing> Deserialize(string json)
         {
-            var strings = GetListingsString();
-            return JsonConvert.DeserializeObject<SearchResponse>(strings).Result;
-        }
-
-        public IEnumerable<CarzoneSearchListing> Deserialize(string json)
-        {
-            var listings = JsonConvert.DeserializeObject<CarzoneSearchResponse>(json);
-            return listings.Adverts;
+            var listings = JsonConvert.DeserializeObject<SearchResponse>(json);
+            return listings.Result;
         }
     }
 
@@ -58,7 +52,7 @@ namespace Scraper.CarsIreland
         public string Fuel_Type { get; set; }
         public string Location { get; set; }
         public string Make { get; set; }
-        public int Mileage { get; set; }
+        public int? Mileage { get; set; }
         public string Model { get; set; }
         public string Price { get; set; }
         public int Reg_Year { get; set; }
