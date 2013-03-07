@@ -8,11 +8,11 @@
 
 <h2>Index</h2>
 
-<input type="text" name="make" value="" />
-<input type="text" name="model" value="" />
-<input type="text" name="maxPrice" value="" />
+Make <input type="text" name="make" value="" /> <br />
+Model <input type="text" name="model" value="" /> <br />
 
-<input type="button" name="draw" onclick="drawClick()" value="Draw" />
+<input type="button" name="drawPrice" onclick="drawClick(1)" value="Draw Price" />
+<input type="button" name="drawMileage" onclick="drawClick(2)" value="Draw Mileage" />
 
 <div id="chart" style="padding: 20px">
 
@@ -25,15 +25,18 @@
         data.forEach(function (d) {
             d.Price = +d.Price;
             d.Year = +d.Year;
+            d.Mileage = +d.Mileage;
         });
 
         globalData = data;
     });
 
-    function drawClick() {
+    function drawClick(type) {
         var filteredData = globalData;
 
-        filteredData = filteredData.filter(function (d) { return d.Price < 50000; });
+        filteredData = filteredData.filter(function (d) {
+            return d.Price < 100000 && d.Price > 0 && d.Year > 1990;
+        });
 
         var make = $("input[name='make']").val();
         if (make !== "") {
@@ -45,10 +48,11 @@
             filteredData = filteredData.filter(function (d) { return d.Model === model; });
         }
 
-        drawChart(filteredData);
+        if (type == 1) { drawPriceChart(filteredData); }
+        if (type == 2) { drawMileageChart(filteredData); }
     }
 
-    function drawChart(data) {
+    function drawPriceChart(data) {
         $("#chart").empty();
 
         var margin = { top: 30, right: 30, bottom: 40, left: 80 },
@@ -112,6 +116,91 @@
           .attr("class", "dot")
           .attr("r", 3.5)
           .attr("cx", function (d) { return x(d.Year); })
+          .attr("cy", function (d) { return y(d.Price); })
+          .style("fill", function (d) { return color(d.Model); });
+
+        var legend = svg.selectAll(".legend")
+            .data(color.domain())
+          .enter().append("g")
+            .attr("class", "legend")
+            .attr("transform", function (d, i) { return "translate(0," + i * 20 + ")"; });
+
+        legend.append("rect")
+          .attr("x", width - 18)
+          .attr("width", 18)
+          .attr("height", 18)
+          .style("fill", color);
+
+        legend.append("text")
+            .attr("x", width - 24)
+            .attr("y", 9)
+            .attr("dy", ".35em")
+            .style("text-anchor", "end")
+            .text(function (d) { return d; });
+    }
+
+    function drawMileageChart(data) {
+        data = data.filter(function (d) { return d.Mileage > 0 && d.Mileage < 250000; });
+
+        $("#chart").empty();
+
+        var margin = { top: 30, right: 30, bottom: 40, left: 80 },
+        width = 960 - margin.left - margin.right,
+        height = 500 - margin.top - margin.bottom;
+
+        var x = d3.scale.linear()
+            .range([0, width]);
+
+        var y = d3.scale.linear()
+            .range([height, 0]);
+
+        var color = d3.scale.category10();
+
+        var xAxis = d3.svg.axis()
+            .scale(x)
+            .orient("bottom");
+
+        var yAxis = d3.svg.axis()
+            .scale(y)
+            .orient("left");
+
+        var svg = d3.select("#chart").append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+          .append("g")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+        x.domain(d3.extent(data, function (d) { return d.Mileage; })).nice();
+        y.domain(d3.extent(data, function (d) { return d.Price; })).nice();
+
+        svg.append("g")
+            .attr("class", "x axis")
+            .attr("transform", "translate(0," + height + ")")
+            .call(xAxis)
+          .append("text")
+            .attr("class", "label")
+            .attr("x", width)
+            .attr("y", -6)
+            .style("text-anchor", "end")
+            .text("Year");
+
+        svg.append("g")
+            .attr("class", "y axis")
+            .call(yAxis)
+          .append("text")
+            .attr("class", "label")
+            .attr("transform", "rotate(-90)")
+            .attr("y", 6)
+            .attr("dy", ".71em")
+            .style("text-anchor", "end")
+            .text("Price")
+
+        svg.selectAll(".dot")
+          .data(data)
+        .enter().append("circle")
+          .attr("class", "dot")
+          .attr("r", 3.5)
+          .attr("cx", function (d) { return x(d.Mileage); })
           .attr("cy", function (d) { return y(d.Price); })
           .style("fill", function (d) { return color(d.Model); });
 
