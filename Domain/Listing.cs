@@ -11,6 +11,8 @@ namespace Domain
     {
         public int Id { get; set; }
 
+        public SourceSite Source { get; set; }
+
         [Required]
         public int MakeId { get; set; }
         public virtual Make Make { get; set; }
@@ -24,6 +26,8 @@ namespace Domain
 
         [Required]
         public int Price { get; set; }
+
+        public int Mileage { get; set; }
 
         public int LocationId { get; set; }
         public virtual Location Location { get; set; }
