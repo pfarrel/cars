@@ -74,8 +74,9 @@ namespace Scraper
                     {
                         var carsIrelandListing = listings[j];
 
+                        var culture = new CultureInfo("en-IE");
                         int price;
-                        if (!int.TryParse(carsIrelandListing.Price, NumberStyles.Currency, CultureInfo.InstalledUICulture, out price)) 
+                        if (!int.TryParse(carsIrelandListing.Price, NumberStyles.Currency, culture, out price)) 
                         { 
                             price = -1;
                         }
