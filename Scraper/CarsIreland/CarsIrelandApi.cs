@@ -19,12 +19,18 @@ namespace Scraper.CarsIreland
         {
         }
 
-        public string GetListingsString()
+        public string GetListingsString(int page = 1)
         {
-            return MakeRequestSynchronous("search.json?page=0&location_id=0");
+            return MakeRequestSynchronous(string.Format("search.json?page={0}&location_id=0", page));
         }
 
-        public IEnumerable<CarsIrelandSearchListing> GetListings()
+        public IEnumerable<CarsIrelandSearchListing> GetListings(int page = 1)
+        {
+            var strings = GetListingsString(page);
+            return JsonConvert.DeserializeObject<SearchResponse>(strings).Result;
+        }
+
+        public IEnumerable<CarsIrelandSearchListing> GetXListings()
         {
             var strings = GetListingsString();
             return JsonConvert.DeserializeObject<SearchResponse>(strings).Result;

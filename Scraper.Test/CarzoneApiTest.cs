@@ -45,6 +45,7 @@ namespace Scraper.Test
         }
 
         [TestMethod]
+        [Ignore]
         public void GetListings_SaveApiOutput()
         {
             var strings = api.GetListingsStrings(1, int.MaxValue).ToList();
