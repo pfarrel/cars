@@ -9,7 +9,7 @@ using Newtonsoft.Json;
 namespace Scraper.Test
 {
     [TestClass]
-    public class JsonApiTest
+    public class CarzoneApiTest
     {
         CarzoneApi api = new CarzoneApi();
 

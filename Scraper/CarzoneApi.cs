@@ -8,16 +8,14 @@ using Newtonsoft.Json;
 
 namespace Scraper
 {
-    public class CarzoneApi
+    public class CarzoneApi : ApiBase
     {
         private const string BaseUrl = "http://www.carzone.ie/es-ie/search/";
         private const string GetCarsFormatSuffix = "json?startrow={0}&maxrows={1}&legacy_url=y&requestor=cz";
 
         private const int MaxResultsToFetchAtOnce = 100;
 
-        private HttpClient client;
-
-        public CarzoneApi()
+        public CarzoneApi() : base(BaseUrl)
         {
             client = new HttpClient();
         }
@@ -31,7 +29,7 @@ namespace Scraper
         public IEnumerable<string> GetListingsStrings(int first, int count)
         {
             // Do initial request just to read totals from it
-            var getTotalsResponse = MakeRequest(MakeGetListingsUrl(1, 10));
+            var getTotalsResponse = MakeRequestSynchronous(MakeGetListingsUrl(1, 10));
             var totals = JsonConvert.DeserializeObject<CarzoneSearchResponse>(getTotalsResponse);
 
             var available = totals.TotalAdvertCount;
@@ -44,7 +42,7 @@ namespace Scraper
             {
                 // +1 for case where current and available are equal, we still have to fetch one
                 int fetchThisTime = Math.Min((toFetch - currentResult) + 1, MaxResultsToFetchAtOnce);
-                var jsonString = MakeRequest(MakeGetListingsUrl(currentResult, fetchThisTime));
+                var jsonString = MakeRequestSynchronous(MakeGetListingsUrl(currentResult, fetchThisTime));
                 results.Add(jsonString);
                 currentResult += fetchThisTime;
             }
@@ -52,21 +50,9 @@ namespace Scraper
             return results;
         }
 
-        private string MakeRequest(string url)
-        {
-            var response = client.GetAsync(url).Result;
-            response.EnsureSuccessStatusCode();
-            if (response.StatusCode == System.Net.HttpStatusCode.NoContent)
-            {
-                throw new ApplicationException("Request failed - rate limited or blocked (204 No Content)");
-            }
-
-            return response.Content.ReadAsStringAsync().Result;
-        }
-
         private string MakeGetListingsUrl(int first, int count)
         {
-            return BaseUrl + string.Format(GetCarsFormatSuffix, first, count);
+            return string.Format(GetCarsFormatSuffix, first, count);
         }
 
         public IEnumerable<CarzoneSearchListing> Deserialize(string json)
