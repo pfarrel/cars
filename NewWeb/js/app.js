@@ -7,26 +7,19 @@ App.Router.map(function () {
 
 App.ApplicationRoute = Ember.Route.extend({
     setupController: function () {
-        this.controllerFor('makemodels').set('model', App.Makemodel.find());
-        this.controllerFor('selectedmakemodels').set('model', []);
+        this.controllerFor('makemodels').set('model', []);
+        this.controllerFor('makemodels').set('allMakeModels', App.Makemodel.find());
     }
 });
 
 App.MakemodelsController = Ember.ArrayController.extend({
     addMakeModel: function (makeModel) {
-        var selectedController = this.controllerFor('selectedmakemodels')
-            .get('model')
-            .addObject(makeModel);
-    }
-});
-
-App.SelectedmakemodelsController = Ember.ArrayController.extend({
+        this.addObject(makeModel);
+    },
     removeMakeModel: function (makeModel) {
         this.removeObject(makeModel);
     }
 });
-
-//App.SelectedMakeModelsController = Ember.ArrayController.extend();
 
 App.Store = DS.Store.extend({
     revision: 11,

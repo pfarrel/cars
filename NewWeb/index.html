@@ -21,7 +21,7 @@
             <div class="span12">
                 <h1>Chancers</h1>
                 <hr>
-                {{partial "makeModelsSection"}}
+                {{render "makemodels"}}
             </div>
         </div>
     </script>
@@ -30,33 +30,34 @@
         Hello Ember
     </script>
 
-    <script type="text/x-handlebars" data-template-name="_makeModelsSection">
+    <script type="text/x-handlebars" data-template-name="makemodels">
         <div class="row">
             <div class="span6">
-                {{render "makemodels"}}
+                {{partial "allMakeModels"}}
             </div>
             <div class="span6">
-                {{render "selectedmakemodels"}}
+                {{partial "selectedMakeModels"}}
             </div>
         </div>
     </script>
 
-    <script type="text/x-handlebars" data-template-name="makemodels">
+    <script type="text/x-handlebars" data-template-name="_allMakeModels">
         <h2>All Makemodels</h2>
         <ul>
-            {{#each controller}}
+            {{#each makeModel in allMakeModels}}
             <li>
-                <a href="#" {{action "addMakeModel" this}}>
-                    <p>{{ name }}</p>
+                <a href="#" {{action "addMakeModel" makeModel}}>
+                    <p>{{ makeModel.name }}</p>
                 </a>
             </li>
             {{/each}}
         </ul>
     </script>
 
-    <script type="text/x-handlebars" data-template-name="selectedmakemodels">
+    <script type="text/x-handlebars" data-template-name="_selectedMakeModels">
         <h2>Selected Makemodels</h2>
         <ul>
+            {{log controller}}
             {{#each controller}}
             <li>
                 <a href="#" {{action "removeMakeModel" this}}>
