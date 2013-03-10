@@ -7,12 +7,12 @@ App.Router.map(function () {
 
 App.ApplicationRoute = Ember.Route.extend({
     setupController: function () {
-        this.controllerFor('makemodels').set('model', []);
-        this.controllerFor('makemodels').set('allMakeModels', App.Makemodel.find());
+        this.controllerFor('makeModels').set('model', []);
+        this.controllerFor('makeModels').set('allMakeModels', App.MakeModel.find());
     }
 });
 
-App.MakemodelsController = Ember.ArrayController.extend({
+App.MakeModelsController = Ember.ArrayController.extend({
     search: '',
 
     searchedContent: function () {
@@ -36,11 +36,11 @@ App.Store = DS.Store.extend({
     adapter: 'DS.FixtureAdapter'
 });
 
-App.Makemodel = DS.Model.extend({
+App.MakeModel = DS.Model.extend({
     name: DS.attr('string')
 });
 
-App.Makemodel.FIXTURES = [
+App.MakeModel.FIXTURES = [
     { id: 1, name: 'Ford Focus' },
     { id: 2, name: 'Renault Megane' },
     { id: 3, name: 'Vauxhall Astra' },

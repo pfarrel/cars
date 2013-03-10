@@ -33,7 +33,7 @@
         <div class="container">
             <div class="row">
                 <div class="span12">
-                    {{render "makemodels"}}
+                    {{render "makeModels"}}
                 </div>
             </div>
         </div>
@@ -43,7 +43,7 @@
         <h1>Hello Ember</h1>
     </script>
 
-    <script type="text/x-handlebars" data-template-name="makemodels">
+    <script type="text/x-handlebars" data-template-name="makeModels">
         <div class="row">
             <div class="span6">
                 {{partial "allMakeModels"}}
@@ -55,7 +55,7 @@
     </script>
 
     <script type="text/x-handlebars" data-template-name="_allMakeModels">
-        <h2>All Makemodels</h2>
+        <h2>All MakeModels</h2>
         {{view Ember.TextField valueBinding="search" placeholder="Enter Make or Model"}}
         <ul>
             {{#each makeModel in searchedContent}}
@@ -71,7 +71,7 @@
     </script>
 
     <script type="text/x-handlebars" data-template-name="_selectedMakeModels">
-        <h2>Selected Makemodels</h2>
+        <h2>Selected MakeModels</h2>
         <ul>
             {{#each controller}}
             <li>
