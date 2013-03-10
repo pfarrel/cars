@@ -15,19 +15,32 @@
     <link rel="stylesheet" href="css/bootstrap-responsive.css">
     <link rel="stylesheet" href="css/app.css">
 </head>
-<body>
+<body style="padding-top: 60px">
+    <div class="navbar navbar-inverse navbar-fixed-top">
+        <div class="navbar-inner">
+            <div class="container">
+                <a class="brand" href="#">Chancers</a>
+                <ul class="nav">
+                    <li class="active"><a href="#">Home</a></li>
+                    <li><a href="#">About</a></li>
+                    <li><a href="#">Contact</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
     <script type="text/x-handlebars" data-template-name="application">
-        <div class="row">
-            <div class="span12">
-                <h1>Chancers</h1>
-                <hr>
-                {{render "makemodels"}}
+        <div class="container">
+            <div class="row">
+                <div class="span12">
+                    {{render "makemodels"}}
+                </div>
             </div>
         </div>
     </script>
 
     <script type="text/x-handlebars" data-template-name="index">
-        Hello Ember
+        <h1>Hello Ember</h1>
     </script>
 
     <script type="text/x-handlebars" data-template-name="makemodels">
@@ -43,13 +56,16 @@
 
     <script type="text/x-handlebars" data-template-name="_allMakeModels">
         <h2>All Makemodels</h2>
+        {{view Ember.TextField valueBinding="search" placeholder="Enter Make or Model"}}
         <ul>
-            {{#each makeModel in allMakeModels}}
+            {{#each makeModel in searchedContent}}
             <li>
                 <a href="#" {{action "addMakeModel" makeModel}}>
-                    <p>{{ makeModel.name }}</p>
+                    <i class="icon-plus-sign"></i> {{ makeModel.name }}
                 </a>
             </li>
+            {{else}}
+            No matches found
             {{/each}}
         </ul>
     </script>
@@ -57,11 +73,10 @@
     <script type="text/x-handlebars" data-template-name="_selectedMakeModels">
         <h2>Selected Makemodels</h2>
         <ul>
-            {{log controller}}
             {{#each controller}}
             <li>
                 <a href="#" {{action "removeMakeModel" this}}>
-                    <p>{{ name }}</p>
+                    <i class="icon-remove"></i> {{ name }}
                 </a>
             </li>
             {{/each}}

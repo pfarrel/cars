@@ -13,6 +13,16 @@ App.ApplicationRoute = Ember.Route.extend({
 });
 
 App.MakemodelsController = Ember.ArrayController.extend({
+    search: '',
+
+    searchedContent: function () {
+        var regexp = new RegExp(this.get('search'), 'i');
+        var controller = this;
+        return this.get('allMakeModels').filter(function(item) {
+            return !controller.contains(item) && regexp.test(item.get('name'));
+        });
+    }.property('search', 'model.@each', 'allMakeModels.@each'),    // Depend on allMakeModels so that this is computed on initial load
+
     addMakeModel: function (makeModel) {
         this.addObject(makeModel);
     },
@@ -31,10 +41,10 @@ App.Makemodel = DS.Model.extend({
 });
 
 App.Makemodel.FIXTURES = [
-    { id: 1, name: 'Ford - Focus' },
-    { id: 2, name: 'Renault - Megane' },
-    { id: 3, name: 'Vauxhall - Astra' },
-    { id: 4, name: 'Peugot - 206' },
-    { id: 5, name: 'Volkswagen - Touran' },
-    { id: 6, name: 'Toyota - Corolla' },
+    { id: 1, name: 'Ford Focus' },
+    { id: 2, name: 'Renault Megane' },
+    { id: 3, name: 'Vauxhall Astra' },
+    { id: 4, name: 'Peugot 206' },
+    { id: 5, name: 'Volkswagen Touran' },
+    { id: 6, name: 'Toyota Corolla' }
 ];
