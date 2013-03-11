@@ -35,6 +35,9 @@
                 <div class="span12">
                     {{render "makeModels"}}
                 </div>
+                <div class="span12">
+                    {{render "locations"}}
+                </div>
             </div>
         </div>
     </script>
@@ -48,6 +51,7 @@
             <div class="span6">
                 {{partial "allMakeModels"}}
             </div>
+            <hr>
             <div class="span6">
                 {{partial "selectedMakeModels"}}
             </div>
@@ -83,6 +87,45 @@
         </ul>
     </script>
 
+    <script type="text/x-handlebars" data-template-name="locations">
+        <div class="row">
+            <div class="span6">
+                {{partial "allLocations"}}
+            </div>
+            <div class="span6">
+                {{partial "selectedLocations"}}
+            </div>
+        </div>
+    </script>
+
+    <script type="text/x-handlebars" data-template-name="_allLocations">
+        <h2>All Locations</h2>
+        {{view Ember.TextField valueBinding="search" placeholder="Enter Location"}}
+        <ul>
+            {{#each location in searchedContent}}
+            <li>
+                <a href="#" {{action "addLocation" location}}>
+                    <i class="icon-plus-sign"></i> {{ location.name }}
+                </a>
+            </li>
+            {{else}}
+            No matches found
+            {{/each}}
+        </ul>
+    </script>
+
+    <script type="text/x-handlebars" data-template-name="_selectedLocations">
+        <h2>Selected Locations</h2>
+        <ul>
+            {{#each controller}}
+            <li>
+                <a href="#" {{action "removeLocation" this}}>
+                    <i class="icon-remove"></i> {{ name }}
+                </a>
+            </li>
+            {{/each}}
+        </ul>
+    </script>
     <script src="js/libs/jquery-1.9.1.js"></script>
     <script src="js/libs/handlebars.js"></script>
     <script src="js/libs/ember-1.0.0-rc.1.js"></script>
