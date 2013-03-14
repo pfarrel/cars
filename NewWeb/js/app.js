@@ -1,141 +1,5 @@
 var App = Ember.Application.create();
 
-App.ChartView = Ember.View.extend({
-  chart: {}
-  ,line: {}
-  ,area: {}
-
-  ,updateChart: function updateChart() {
-    var content = this.get('content');
-    var chart = this.get('chart');
-    var line = this.get('line');
-    var area = this.get('area');
-
-    chart.selectAll('path.line')
-    .data(content)
-      .transition()
-    .duration(500)
-    .ease('sin')
-    .attr('d', line(content));
-    chart.selectAll('path.area')
-    .data(content)
-    .transition()
-    .duration(500)
-    .ease('sin')
-    .attr('d', area(content));
-    }.observes('content.@each.value')
-
-  ,didInsertElement: function didInsertElement() {
-    var elementId = this.get('elementId');
-    var content = this.get('content');
-
-    var margin = { top: 35, right: 35, bottom: 35, left: 35};
-    var w = 500 - margin.right - margin.left;
-    var h = 300 - margin.top - margin.top;
-
-    var x = d3.scale.linear()
-    .range([0,w])
-    .domain([1,content.length]);
-
-    var y = d3.scale.linear()
-    .range([h,0])
-    .domain([0,100]);
-
-    var xAxis = d3.svg.axis()
-    .scale(x)
-    .ticks(10)
-    .tickSize(-h)
-    .tickSubdivide(true);
-
-    var yAxis = d3.svg.axis()
-    .scale(y)
-    .ticks(4)
-    .tickSize(-w)
-    .orient('left');
-
-    var line = d3.svg.line()
-        .interpolate('monotone')
-        .x(function(d) { return x(d.get('timestamp'))})
-        .y(function(d) { return y(d.get('value'))});
-    this.set('line',line);
-
-    var area = d3.svg.area()
-        .interpolate('monotone')
-        .x(function(d) { return x(d.get('timestamp')); })
-        .y0(h)
-        .y1(function(d) { return y(d.get('value')); });
-    this.set('area',area);
-
-    var chart = d3.select('#'+elementId).append('svg:svg')
-        .attr('id','chart')
-        .attr('width', w+margin.left+margin.right)
-        .attr('height', w+margin.top+margin.bottom)
-        .append('svg:g')
-        .attr('transform', 'translate('+margin.left+','+margin.top+')');
-
-
-    chart.append('svg:g')
-        .attr('class', 'x axis')
-        .attr('transform', 'translate(0,' + h + ')')
-        .call(xAxis);
-
-    chart.append('svg:g')
-        .attr('class', 'y axis')
-        .call(yAxis);
-
-    chart.append('svg:clipPath')
-        .attr('id', 'clip')
-        .append('svg:rect')
-        .attr('width', w)
-        .attr('height', h);
-
-    chart.append('svg:path')
-        .attr('class', 'area')
-        .attr('clip-path', 'url(#clip)')
-        .attr('d', area(content));
-
-    chart.append('svg:path')
-        .attr('class', 'line')
-        .attr('clip-path', 'url(#clip)')
-        .attr('d', line(content));
-    this.set('chart',chart);
-  }
-});
-
-App.ChartValuesController = Ember.ArrayController.create({
-    content: []
-    ,init: function init() {
-        this.replaceWithRandom();
-    }
-    ,replaceWithRandom: function replaceWithRandom() {
-        var newContent = [];
-        var max = 100;
-
-        for(var i = 0, l = 100; i < l; i++) {
-            var item = Ember.Object.create({
-                timestamp: i
-                ,value: max/2+Math.sin(i)*Math.ceil((max/2.5)*Math.random())
-            });
-
-            newContent[i] = item;
-        }
-
-        this.set('content', newContent);
-    }
-});
-
-App.ApplicationView = Ember.View.extend({
-  chartValuesBinding: 'App.ChartValuesController.content'
-});
-
-App.ApplicationController = Ember.Controller.extend({
-  generateNewChartValues: function(event) {
-    App.ChartValuesController.replaceWithRandom();
-  }
-
-});
-
-
 App.Router.map(function () {
 });
 
@@ -145,7 +9,106 @@ App.ApplicationRoute = Ember.Route.extend({
     this.controllerFor('makeModels').set('allMakeModels', App.MakeModel.find());
     this.controllerFor('locations').set('model', []);
     this.controllerFor('locations').set('allLocations', App.Location.find());
+    loadData(this.controllerFor('chart'));
   }
+});
+
+
+App.ChartView = Ember.View.extend({
+  updateChart: function updateChart() {
+    var data = this.get('controller.filteredData');
+    var chart = this.get('chart');
+    // chart not first rendered yet
+    if (chart === undefined) { return; }
+
+    var width = this.get('width'),
+        height = this.get('height');
+    var x = d3.scale.linear()
+        .range([0, width]);
+
+    var y = d3.scale.linear()
+        .range([height, 0]);
+
+    var color = d3.scale.category10();
+
+    var xAxis = d3.svg.axis()
+        .scale(x)
+        .orient("bottom");
+
+    var yAxis = d3.svg.axis()
+        .scale(y)
+        .orient("left");
+
+    var yearExtents = d3.extent(data, function (d) { return d.Year; });
+    yearExtents[0]--;
+    yearExtents[1]++;
+
+    x.domain(yearExtents);
+    y.domain(d3.extent(data, function (d) { return d.Price; })).nice();
+
+    var circles = chart.selectAll("circle")
+      .data(data, function (d) { return d.Price; });
+
+    circles.enter().append("circle")
+      .attr("r", 3.5)
+      .attr("cx", function (d) { return x(d.Year); })
+      .attr("cy", function (d) { return y(d.Price); });
+
+    circles.exit().remove()
+    }.observes('controller.filteredData')
+
+  ,didInsertElement: function didInsertElement() {
+    var elementId = this.get('elementId');
+    var margin = { top: 30, right: 30, bottom: 40, left: 80 },
+    width = 960 - margin.left - margin.right,
+    height = 500 - margin.top - margin.bottom;
+    this.set('width', width);
+    this.set('height', height);
+
+    var chart = d3.select('#'+elementId).append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+      .append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+    this.set('chart', chart);
+
+        /*chart.append("g")
+        .attr("class", "x axis")
+        .attr("transform", "translate(0," + height + ")")
+        .call(xAxis)
+      .append("text")
+        .attr("class", "label")
+        .attr("x", width)
+        .attr("y", -6)
+        .style("text-anchor", "end")
+        .text("Year");
+
+    chart.append("g")
+        .attr("class", "y axis")
+        .call(yAxis)
+      .append("text")
+        .attr("class", "label")
+       .attr("transform", "rotate(-90)")
+        .attr("y", 6)
+        .attr("dy", ".71em")
+        .style("text-anchor", "end")
+        .text("Price")*/
+  }
+});
+
+App.ChartController = Ember.ArrayController.extend({
+  content: [],
+  needs: ['locations'],
+  allData: [],
+  filteredData: function() {
+    var locations = this.get('controllers.locations.content');
+    var matches = this.get('allData').filter(function (d) {
+      return locations.some(function (location) {
+        return d.Location === location.get('name');
+      });
+    });
+    return matches;
+  }.property('allData', 'controllers.locations.content.@each'),
 });
 
 App.MakeModelsController = Ember.ArrayController.extend({
@@ -216,3 +179,15 @@ App.Location.FIXTURES = [
   { id: 5, name: 'Waterford' },
   { id: 6, name: 'Limerick' }
 ];
+
+function loadData(controller) {
+  d3.json("/data.js", function (error, data) {
+    data.forEach(function (d) {
+      d.Price = +d.Price;
+      d.Year = +d.Year;
+      d.Mileage = +d.Mileage;
+    });
+    controller.set('allData', data);
+  });;
+}
+

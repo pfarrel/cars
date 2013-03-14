@@ -38,9 +38,8 @@
     <div class="span12">
       {{render "locations"}}
     </div>
-      <a href="#" {{action generateNewChartValues }} class="button">Generate new Values</a>
     <div class="span12">
-      {{view App.ChartView contentBinding="view.chartValues"}}
+      {{render "chart"}}
     </div>
   </div>
 </div>
@@ -130,6 +129,9 @@
   </ul>
 </script>
 
+<script type="text/x-handlebars" data-template-name="chart">
+  <div id="hurrchart"></div>
+</script>
 <script src="js/libs/jquery-1.9.1.js"></script>
 <script src="js/libs/handlebars.js"></script>
 <script src="js/libs/ember-1.0.0-rc.1.js"></script>
