@@ -46,15 +46,44 @@ App.ChartView = Ember.View.extend({
     x.domain(yearExtents);
     y.domain(d3.extent(data, function (d) { return d.Price; })).nice();
 
+    chart.select("g.xaxis").remove();
+    chart.select("g.yaxis").remove();
+    chart.append("g")
+        .attr("class", "xaxis")
+        .attr("transform", "translate(0," + height + ")")
+        .call(xAxis)
+      .append("text")
+        .attr("class", "label")
+        .attr("x", width)
+        .attr("y", -6)
+        .style("text-anchor", "end")
+        .text("Year");
+
+    chart.append("g")
+        .attr("class", "yaxis")
+        .call(yAxis)
+      .append("text")
+        .attr("class", "label")
+       .attr("transform", "rotate(-90)")
+        .attr("y", 6)
+        .attr("dy", ".71em")
+        .style("text-anchor", "end")
+        .text("Price")
+
     var circles = chart.selectAll("circle")
       .data(data, function (d) { return d.Price; });
 
     circles.enter().append("circle")
       .attr("r", 3.5)
-      .attr("cx", function (d) { return x(d.Year); })
-      .attr("cy", function (d) { return y(d.Price); });
+      .attr("cx", function (d) { return 0; })
 
-    circles.exit().remove()
+    circles.transition().duration(1000)
+      .attr("cy", function (d) { return y(d.Price); })
+      .attr("cx", function (d) { return x(d.Year); })
+
+    circles.exit().transition()
+      .duration(1000)
+      .attr("cx", 0).remove()
     }.observes('controller.filteredData')
 
   ,didInsertElement: function didInsertElement() {
@@ -72,28 +101,7 @@ App.ChartView = Ember.View.extend({
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
     this.set('chart', chart);
 
-        /*chart.append("g")
-        .attr("class", "x axis")
-        .attr("transform", "translate(0," + height + ")")
-        .call(xAxis)
-      .append("text")
-        .attr("class", "label")
-        .attr("x", width)
-        .attr("y", -6)
-        .style("text-anchor", "end")
-        .text("Year");
-
-    chart.append("g")
-        .attr("class", "y axis")
-        .call(yAxis)
-      .append("text")
-        .attr("class", "label")
-       .attr("transform", "rotate(-90)")
-        .attr("y", 6)
-        .attr("dy", ".71em")
-        .style("text-anchor", "end")
-        .text("Price")*/
-  }
+    }
 });
 
 App.ChartController = Ember.ArrayController.extend({
@@ -105,7 +113,7 @@ App.ChartController = Ember.ArrayController.extend({
     var matches = this.get('allData').filter(function (d) {
       return locations.some(function (location) {
         return d.Location === location.get('name');
-      });
+      }) && d.Price < 100000 && d.Year > 1995;
     });
     return matches;
   }.property('allData', 'controllers.locations.content.@each'),
