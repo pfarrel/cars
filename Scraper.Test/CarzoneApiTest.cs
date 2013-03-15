@@ -58,5 +58,12 @@ namespace Scraper.Test
                 }
             }
         }
+
+        [TestMethod]
+        public void GetDetails()
+        {
+            var details = api.GetListingDetails(34113630340792500);
+            Assert.AreEqual(40000, details.VehicleKm);
+        }
     }
 }

@@ -11,13 +11,13 @@ namespace Scraper
     public class CarzoneApi : ApiBase
     {
         private const string BaseUrl = "http://www.carzone.ie/es-ie/search/";
-        private const string GetCarsFormatSuffix = "json?startrow={0}&maxrows={1}&legacy_url=y&requestor=cz";
+        private const string CarSearchUrl = "json?startrow={0}&maxrows={1}&legacy_url=y&requestor=cz";
+        private const string IndividualCarUrl = "{0}/jsonAdvert";
 
         private const int MaxResultsToFetchAtOnce = 100;
 
         public CarzoneApi() : base(BaseUrl)
         {
-            client = new HttpClient();
         }
 
         public IEnumerable<CarzoneSearchListing> GetListings(int first, int count)
@@ -52,7 +52,14 @@ namespace Scraper
 
         private string MakeGetListingsUrl(int first, int count)
         {
-            return string.Format(GetCarsFormatSuffix, first, count);
+            return string.Format(CarSearchUrl, first, count);
+        }
+
+        public CarzoneListingDetails GetListingDetails(long advertId)
+        {
+            var response = MakeRequestSynchronous(string.Format(IndividualCarUrl, advertId));
+            var details = JsonConvert.DeserializeObject<CarzoneListingDetails>(response);
+            return details;
         }
 
         public IEnumerable<CarzoneSearchListing> Deserialize(string json)
@@ -78,5 +85,17 @@ namespace Scraper
         public string VehicleDerivative { get; set; }
         public int VehiclePriceEuro { get; set; }
         public int VehicleYearOfManufacture { get; set; }
+    }
+
+    public class CarzoneListingDetails
+    {
+        public long AdvertId { get; set; }
+        public string AdvertDescription { get; set; }
+        public string VehicleColourDescription { get; set; }
+        public float VehicleEngineSizeLitres { get; set; }
+        public string VehicleFuelType { get; set; }
+        public int VehicleKm { get; set; }
+        public int VehicleMileage { get; set; }
+        public string VehicleTransmission { get; set; }
     }
 }

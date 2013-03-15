@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -14,7 +15,10 @@ namespace Scraper
 
         protected ApiBase(string baseUrl)
         {
-            client = new HttpClient();
+            client = new HttpClient(new HttpClientHandler()
+                { 
+                    AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip
+                });
             client.BaseAddress = new Uri(baseUrl);
             client.DefaultRequestHeaders.Add("User-Agent", "Dalvik/1.6.0 (Linux; U; Android 4.0.4; LT26i Build/6.1.A.2.45)");
             client.DefaultRequestHeaders.AcceptEncoding.Add(StringWithQualityHeaderValue.Parse("gzip"));
