@@ -1,0 +1,33 @@
+require 'rake/clean'
+
+CLEAN = FileList.new('*').exclude('*.zip').exclude('ireland.json')
+
+file "ne_10m_admin_1_states_provinces_shp.zip" => [] do
+  sh "wget http://www.nacis.org/naturalearth/10m/cultural/ne_10m_admin_1_states_provinces_shp.zip"
+end
+
+file "ne_10m_admin_1_states_provinces_shp.shp" => ["ne_10m_admin_1_states_provinces_shp.zip"] do
+  sh "unzip -o ne_10m_admin_1_states_provinces_shp.zip"
+  sh "touch ne_10m_admin_1_states_provinces_shp.*"
+end
+
+file "counties.json" => ["ne_10m_admin_1_states_provinces_shp.shp"] do
+  sh "ogr2ogr -f GeoJSON -where \"admin = 'Ireland'\" counties.json ne_10m_admin_1_states_provinces_shp.shp"
+end
+
+file "ne_10m_admin_0_map_subunits.zip" => [] do
+  sh "wget http://www.nacis.org/naturalearth/10m/cultural/ne_10m_admin_0_map_subunits.zip"
+end
+
+file "ne_10m_admin_0_map_subunits.shp" => ["ne_10m_admin_0_map_subunits.zip"] do
+  sh "unzip -o ne_10m_admin_0_map_subunits.zip"
+  sh "touch ne_10m_admin_0_map_subunits.*"
+end
+
+file "countries.json" => ["ne_10m_admin_0_map_subunits.shp"] do
+  sh "ogr2ogr -f GeoJSON -where \"name IN ('Ireland', 'N. Ireland')\" countries.json ne_10m_admin_0_map_subunits.shp"
+end
+
+file "ireland.json" => ["counties.json", "countries.json"] do
+  sh "topojson --id-property name -o ireland.json counties.json countries.json"
+end
