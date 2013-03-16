@@ -1,6 +1,9 @@
 require 'rake/clean'
 
-CLEAN = FileList.new('*').exclude('*.zip').exclude('ireland.json')
+CLEAN = FileList.new('*').exclude('rakefile').exclude('*.zip').exclude('ireland.json')
+CLOBBER = FileList.new('*').exclude('rakefile')
+
+task :default => ["ireland.json"]
 
 file "ne_10m_admin_1_states_provinces_shp.zip" => [] do
   sh "wget http://www.nacis.org/naturalearth/10m/cultural/ne_10m_admin_1_states_provinces_shp.zip"
