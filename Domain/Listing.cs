@@ -34,10 +34,18 @@ namespace Domain
 
         public int Mileage { get; set; }
 
-        public int LocationId { get; set; }
-        public virtual Location Location { get; set; }
+        public County County { get; set; }
 
         public string Description { get; set; }
+
+        [Required]
+        public bool Active { get; set; }
+
+        [Required]
+        public DateTime DateAdded { get; set; }
+
+        [Required]
+        public DateTime DateLastSeen { get; set; }
 
         public Listing()
         {
@@ -55,6 +63,10 @@ namespace Domain
             string location,
             string description)
         {
+            Active = true;
+            DateAdded = DateTime.Now;
+            DateLastSeen = DateTime.Now;
+
             Source = source;
             SourceId = sourceId;
             Year = year;
@@ -79,13 +91,7 @@ namespace Domain
             }
             Model = modelEntity;
 
-            var locationEntity = context.Locations.SingleOrDefault(m => m.Name.ToLower() == location.ToLower());
-            if (locationEntity == null)
-            {
-                locationEntity = context.Locations.Add(new Location { Name = location });
-                newEntityCreated = true;
-            }
-            Location = locationEntity;
+            County = EnumHelpers.CountyFromString(location);
 
             if (newEntityCreated)
             {

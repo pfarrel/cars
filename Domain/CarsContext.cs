@@ -12,7 +12,6 @@ namespace Domain
         public DbSet<Make> Makes { get; set; }
         public DbSet<Model> Models { get; set; }
         public DbSet<Listing> Listings { get; set; }
-        public DbSet<Location> Locations { get; set; }
 
         public CarsContext() : base ("CarsContext")
         {

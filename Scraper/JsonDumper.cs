@@ -16,7 +16,7 @@ namespace Scraper
         {
             using (var context = new CarsContext())
             {
-                var data = context.Listings.Include("Make").Include("Model").Include("Location").ToList();
+                var data = context.Listings.Include("Make").Include("Model").ToList();
 
                 DumpJson("data.js", data);
             }
@@ -26,6 +26,7 @@ namespace Scraper
         {
             var flattened = stuff.Select(l => new
                 {
+                    Id = l.Id,
                     Source = l.Source.ToString(),
                     Make = l.Make.Name,
                     Model = l.Model.Name,
@@ -33,7 +34,7 @@ namespace Scraper
                     Price = l.Price,
                     Year = l.Year,
                     Description = l.Description,
-                    Location = l.Location.Name
+                    Location = l.County.ToString()
                 }).ToList();
             using (FileStream fs = File.Open(fileName, FileMode.OpenOrCreate))
             using (StreamWriter sw = new StreamWriter(fs))

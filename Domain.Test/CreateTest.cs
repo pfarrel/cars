@@ -12,7 +12,8 @@ namespace Domain.Test
         {
             using (var context = new CarsContext())
             {
-                //Assert.AreEqual(0, context.Makes.ToList().Count());
+                var make = context.Makes.FirstOrDefault();
+                Assert.IsNull(make);
             }
         }
     }
