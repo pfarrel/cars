@@ -53,6 +53,7 @@ namespace Domain
 
         public Listing(
             CarsContext context,
+            Cache cache,
             SourceSite source,
             string sourceId,
             string make,
@@ -74,42 +75,11 @@ namespace Domain
             Mileage = mileage;
             Description = description;
 
-            bool newEntityCreated = false;
-            var makeEntity = context.Makes.SingleOrDefault(m => m.Name.ToLower() == make.ToLower());
-            if (makeEntity == null)
-            {
-                makeEntity = context.Makes.Add(new Make { Name = make });
-                newEntityCreated = true;
-            }
-            Make = makeEntity;
+            MakeId = cache.GetOrCreate<Make>(context, make);
 
-            var modelEntity = context.Models.SingleOrDefault(m => m.Name.ToLower() == model.ToLower());
-            if (modelEntity == null)
-            {
-                modelEntity = context.Models.Add(new Model { Name = model });
-                newEntityCreated = true;
-            }
-            Model = modelEntity;
+            ModelId = cache.GetOrCreate<Model>(context, model);
 
             County = EnumHelpers.CountyFromString(location);
-
-            if (newEntityCreated)
-            {
-                try
-                {
-                    context.SaveChanges();
-                }
-                catch (DbEntityValidationException dbEx)
-                {
-                    foreach (var validationErrors in dbEx.EntityValidationErrors)
-                    {
-                        foreach (var validationError in validationErrors.ValidationErrors)
-                        {
-                            Console.Out.WriteLine("Property: {0} Error: {1}", validationError.PropertyName, validationError.ErrorMessage);
-                        }
-                    }
-                }
-            }
         }
     }
 }

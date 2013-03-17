@@ -24,6 +24,14 @@ namespace Scraper.Test
         }
 
         [TestMethod]
+        public void UpdateCarzoneEntries_Works()
+        {
+            var scraper = new AllScraper();
+
+            scraper.UpdateCarzoneEntries();
+        }
+
+        [TestMethod]
         public void LoadCarsIrelandFromJson_Works()
         {
             var scraper = new AllScraper();

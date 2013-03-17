@@ -7,11 +7,7 @@ using System.Threading.Tasks;
 
 namespace Domain
 {
-    public class Make
+    public class Make : Dimension
     {
-        public int Id { get; set; }
-
-        [Required]
-        public string Name { get; set; }
     }
 }

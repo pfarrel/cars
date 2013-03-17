@@ -18,6 +18,7 @@ namespace Scraper
         public void LoadCarzoneFromJson()
         {
             var carzoneApi = new CarzoneApi();
+            var cache = new Cache();
 
             var dumpFiles = Directory.GetFiles(@"C:\dev\cars\Scraper.Test\bin\Debug", "jsondump*");
 
@@ -37,6 +38,7 @@ namespace Scraper
                         var carzoneListing = carzoneListings[j];
 
                         var listing = new Listing(context,
+                            cache,
                             SourceSite.Carzone,
                             carzoneListing.AdvertId.ToString(),
                             carzoneListing.VehicleMake,
@@ -54,10 +56,40 @@ namespace Scraper
             }
         }
 
+        public void UpdateCarzoneEntries()
+        {
+            var carzoneApi = new CarzoneApi();
+
+            using (var context = new CarsContext())
+            {
+                var listings = context.Listings
+                    .Where(l => l.Source == SourceSite.Carzone)
+                    .Where(l => l.Mileage == -1)
+                    .ToList();
+
+                foreach (var listing in listings)
+                {
+                    CarzoneListingDetails details;
+                    try
+                    {
+                        details = carzoneApi.GetListingDetails(Convert.ToInt64(listing.SourceId));
+                    }
+                    catch (Exception e)
+                    {
+                        var a = 1;
+                        continue;
+                    }
+
+                    listing.Mileage = details.VehicleMileage;
+                }
+                context.SaveChanges();
+            }
+        }
+
         public void LoadCarsIrelandFromJson()
         {
             var carsIrelandApi = new CarsIrelandApi();
-
+            var cache = new Cache();
             var dumpFiles = Directory.GetFiles(@"C:\dev\cars\Scraper.Test\bin\Debug", "carsirelandjsondump*");
 
             var listings = dumpFiles
@@ -82,6 +114,7 @@ namespace Scraper
                         }
 
                         var listing = new Listing(context,
+                            cache,
                             SourceSite.CarsIreland,
                             carsIrelandListing.Ad_Id.ToString(),
                             carsIrelandListing.Make,
