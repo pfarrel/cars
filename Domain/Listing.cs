@@ -32,8 +32,14 @@ namespace Domain
         [Required]
         public int Price { get; set; }
 
+        [Required]
+        public FuelType FuelType { get; set; }
+
+        public int EngineSize { get; set; }
+
         public int Mileage { get; set; }
 
+        [Required]
         public County County { get; set; }
 
         public string Description { get; set; }
@@ -76,10 +82,9 @@ namespace Domain
             Description = description;
 
             MakeId = cache.GetOrCreate<Make>(context, make);
-
             ModelId = cache.GetOrCreate<Model>(context, model);
 
-            County = EnumHelpers.CountyFromString(location);
+            County = EnumHelpers.FromString<County>(location);
         }
     }
 }

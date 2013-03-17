@@ -42,17 +42,4 @@ namespace Domain
         Wexford,
         Wicklow
     }
-
-    public static class EnumHelpers
-    {
-        public static County CountyFromString(string name)
-        {
-            County result;
-            if (!Enum.TryParse<County>(name, true, out result))
-            {
-                result = County.Unknown;
-            }
-            return result;
-        }
-    }
 }

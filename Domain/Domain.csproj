@@ -49,6 +49,8 @@
     <Compile Include="CarsContext.cs" />
     <Compile Include="County.cs" />
     <Compile Include="Dimension.cs" />
+    <Compile Include="EnumHelpers.cs" />
+    <Compile Include="FuelType.cs" />
     <Compile Include="Listing.cs" />
     <Compile Include="Make.cs" />
     <Compile Include="Model.cs" />

@@ -108,12 +108,13 @@ namespace Scraper
 
                         var culture = new CultureInfo("en-IE");
                         int price;
-                        if (!int.TryParse(carsIrelandListing.Price, NumberStyles.Currency, culture, out price)) 
+                        if (!Int32.TryParse(carsIrelandListing.Price, NumberStyles.Currency, culture, out price)) 
                         { 
                             price = -1;
                         }
 
-                        var listing = new Listing(context,
+                        var listing = new Listing(
+                            context,
                             cache,
                             SourceSite.CarsIreland,
                             carsIrelandListing.Ad_Id.ToString(),
@@ -124,6 +125,14 @@ namespace Scraper
                             carsIrelandListing.Mileage ?? -1,
                             carsIrelandListing.Location,
                             carsIrelandListing.Variant);
+
+                        listing.FuelType = EnumHelpers.FromString<FuelType>(carsIrelandListing.Fuel_Type);
+
+                        double engineSize;
+                        if (Double.TryParse(carsIrelandListing.Engine_Size, out engineSize))
+                        {
+                            listing.EngineSize = (int)(engineSize * 100);
+                        }
 
                         context.Listings.Add(listing);
                     }
