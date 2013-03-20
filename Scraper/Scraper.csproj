@@ -55,6 +55,7 @@
     <Compile Include="ApiBase.cs" />
     <Compile Include="CarsIreland\CarsIrelandApi.cs" />
     <Compile Include="CarzoneApi.cs" />
+    <Compile Include="DoneDealApi.cs" />
     <Compile Include="JsonDumper.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
