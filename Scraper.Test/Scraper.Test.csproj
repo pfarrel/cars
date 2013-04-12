@@ -60,7 +60,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="AllScraperTest.cs" />
-    <Compile Include="CarzoneApiTest.cs" />
+    <Compile Include="Carzone\CarzoneApiTest.cs" />
     <Compile Include="CarsIrelandApiTest.cs" />
     <Compile Include="DoneDealApiTest.cs" />
     <Compile Include="JsonDumperTest.cs" />

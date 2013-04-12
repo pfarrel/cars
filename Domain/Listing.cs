@@ -5,6 +5,7 @@ using System.Data.Entity.Validation;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Domain.Caching;
 
 namespace Domain
 {
@@ -81,8 +82,8 @@ namespace Domain
             Mileage = mileage;
             Description = description;
 
-            MakeId = cache.GetOrCreate<Make>(context, make);
-            ModelId = cache.GetOrCreate<Model>(context, model);
+            MakeId = cache.GetOrCreate<Make>(make, () => context.Set<Make>().GetOrCreate(make));
+            ModelId = cache.GetOrCreate<Model>(model, () => context.Set<Model>().GetOrCreate(model));
 
             County = EnumHelpers.FromString<County>(location);
         }

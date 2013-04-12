@@ -3,55 +3,68 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.Validation;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Scraper.CarsIreland;
+using Autofac;
 using Domain;
-using System.Globalization;
+using Domain.Caching;
+using Scraper.CarsIreland;
 
 namespace Scraper
 {
     public class AllScraper
     {
+        private ContainerBuilder Builder { get; set; }
+
+        public AllScraper()
+        {
+            Builder = new ContainerBuilder();
+            Builder.Register(r => new Requests.WebRequester()).As<Requests.IRequester>();
+        }
+
         public void LoadCarzoneFromJson()
         {
-            var carzoneApi = new CarzoneApi(new Requests.WebRequester());
-            var cache = new Cache();
-
-            var dumpFiles = Directory.GetFiles(@"C:\dev\cars\Scraper.Test\bin\Debug", "jsondump*");
-
-            var carzoneListings = dumpFiles
-                .AsParallel()
-                .Select(path => File.ReadAllText(path))
-                .SelectMany(text => carzoneApi.Deserialize(text))
-                .Where(cl => cl.VehicleMake != null && cl.VehicleModel != null)
-                .ToList();
-
-            for (int i = 0; i < carzoneListings.Count(); i += 100)
+            using (var container = Builder.Build())
             {
-                using (var context = new CarsContext())
+                var carzoneApi = new CarzoneApi(container.Resolve<Requests.IRequester>());
+                var cache = new Cache();
+
+                var dumpFiles = Directory.GetFiles(@"C:\dev\cars\Scraper.Test\bin\Debug", "jsondump*");
+
+                var carzoneListings = dumpFiles
+                    .AsParallel()
+                    .Select(path => File.ReadAllText(path))
+                    .SelectMany(text => carzoneApi.Deserialize(text))
+                    .Where(cl => cl.VehicleMake != null && cl.VehicleModel != null)
+                    .ToList();
+
+                for (int i = 0; i < carzoneListings.Count(); i += 100)
                 {
-                    for (int j = i; j < i + 100 && j < carzoneListings.Count(); j++)
+                    using (var context = new CarsContext())
                     {
-                        var carzoneListing = carzoneListings[j];
+                        for (int j = i; j < i + 100 && j < carzoneListings.Count(); j++)
+                        {
+                            var carzoneListing = carzoneListings[j];
 
-                        var listing = new Listing(context,
-                            cache,
-                            SourceSite.Carzone,
-                            carzoneListing.AdvertId.ToString(),
-                            carzoneListing.VehicleMake,
-                            carzoneListing.VehicleModel,
-                            carzoneListing.VehicleYearOfManufacture,
-                            carzoneListing.VehiclePriceEuro,
-                            -1,
-                            carzoneListing.AdvertiserCounty,
-                            carzoneListing.VehicleDerivative);
+                            var listing = new Listing(context,
+                                cache,
+                                SourceSite.Carzone,
+                                carzoneListing.AdvertId.ToString(),
+                                carzoneListing.VehicleMake,
+                                carzoneListing.VehicleModel,
+                                carzoneListing.VehicleYearOfManufacture,
+                                carzoneListing.VehiclePriceEuro,
+                                -1,
+                                carzoneListing.AdvertiserCounty,
+                                carzoneListing.VehicleDerivative);
 
-                        context.Listings.Add(listing);
+                            context.Listings.Add(listing);
+                        }
+                        context.SaveChanges();
                     }
-                    context.SaveChanges();
                 }
             }
         }
@@ -108,8 +121,8 @@ namespace Scraper
 
                         var culture = new CultureInfo("en-IE");
                         int price;
-                        if (!Int32.TryParse(carsIrelandListing.Price, NumberStyles.Currency, culture, out price)) 
-                        { 
+                        if (!Int32.TryParse(carsIrelandListing.Price, NumberStyles.Currency, culture, out price))
+                        {
                             price = -1;
                         }
 

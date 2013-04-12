@@ -45,7 +45,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Cache.cs" />
+    <Compile Include="Caching\Cache.cs" />
+    <Compile Include="Caching\ICache.cs" />
     <Compile Include="CarsContext.cs" />
     <Compile Include="County.cs" />
     <Compile Include="Dimension.cs" />
