@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Net.Http;
 using Newtonsoft.Json;
+using Scraper.Requests;
 
 namespace Scraper
 {
@@ -16,7 +16,7 @@ namespace Scraper
 
         private const int MaxResultsToFetchAtOnce = 100;
 
-        public CarzoneApi() : base(BaseUrl)
+        public CarzoneApi(IRequester webRequester) : base(webRequester, BaseUrl)
         {
         }
 
@@ -29,7 +29,7 @@ namespace Scraper
         public IEnumerable<string> GetListingsStrings(int first, int count)
         {
             // Do initial request just to read totals from it
-            var getTotalsResponse = MakeRequestSynchronous(MakeGetListingsUrl(1, 10));
+            var getTotalsResponse = Requester.Get(MakeGetListingsUrl(1, 10));
             var totals = JsonConvert.DeserializeObject<CarzoneSearchResponse>(getTotalsResponse);
 
             var available = totals.TotalAdvertCount;
@@ -42,7 +42,7 @@ namespace Scraper
             {
                 // +1 for case where current and available are equal, we still have to fetch one
                 int fetchThisTime = Math.Min((toFetch - currentResult) + 1, MaxResultsToFetchAtOnce);
-                var jsonString = MakeRequestSynchronous(MakeGetListingsUrl(currentResult, fetchThisTime));
+                var jsonString = Requester.Get(MakeGetListingsUrl(currentResult, fetchThisTime));
                 results.Add(jsonString);
                 currentResult += fetchThisTime;
             }
@@ -57,7 +57,7 @@ namespace Scraper
 
         public CarzoneListingDetails GetListingDetails(long advertId)
         {
-            var response = MakeRequestSynchronous(string.Format(IndividualCarUrl, advertId));
+            var response = Requester.Get(string.Format(IndividualCarUrl, advertId));
             var details = JsonConvert.DeserializeObject<CarzoneListingDetails>(response);
             return details;
         }

@@ -8,6 +8,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using Scraper.Requests;
 
 namespace Scraper.CarsIreland
 {
@@ -15,13 +16,13 @@ namespace Scraper.CarsIreland
     {
         private const string BaseUrl = "http://api.carsireland.ie/app/";
 
-        public CarsIrelandApi() : base(BaseUrl)
+        public CarsIrelandApi(IRequester requester) : base(requester, BaseUrl)
         {
         }
 
         public string GetListingsString(int page = 1)
         {
-            return MakeRequestSynchronous(string.Format("search.json?page={0}&location_id=0", page));
+            return Requester.Get(string.Format("search.json?page={0}&location_id=0", page));
         }
 
         public IEnumerable<CarsIrelandSearchListing> GetListings(int page = 1)

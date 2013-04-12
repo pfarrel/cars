@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Scraper.Requests;
 
 namespace Scraper
 {
@@ -13,14 +14,14 @@ namespace Scraper
     {
         private const string BaseUrl = "http://api.donedeal.ie/api/";
 
-        public DoneDealApi() : base(BaseUrl)
+        public DoneDealApi(IRequester webRequester) : base(webRequester, BaseUrl)
         {
         }
 
         public string GetSearchResultsString(int page)
         {
             var payload = JsonConvert.SerializeObject(new { start = page, source = new[] { "private", "trade" } });
-            var response = client.PostAsync("find/cars/for-sale/Ireland/", new StringContent(payload, Encoding.UTF8, "application/json")).Result;
+            var response = Requester.PostAsync("find/cars/for-sale/Ireland/", payload).Result;
             return response.Content.ReadAsStringAsync().Result;
         }
 
@@ -33,7 +34,7 @@ namespace Scraper
 
         public string GetListingString(long listingId)
         {
-            var response = MakeRequestSynchronous("view/ad/" + listingId);
+            var response = Requester.Get("view/ad/" + listingId);
             return response;
         }
 
@@ -88,7 +89,7 @@ namespace Scraper
         public int Year { get; set; }
         public int Mileage { get; set; }
         public string Mileage_Metric { get; set; }
-        public Decimal EngineSize { get; set; }
+        public Decimal? EngineSize { get; set; }
         public string FuelType { get; set; }
 
         public static DoneDealDetails FromJsonString(string json)
@@ -100,7 +101,7 @@ namespace Scraper
             listing.Make = listing.Attributes.Single(a => a.Name == "make").Value;
             listing.Model = listing.Attributes.Single(a => a.Name == "model").Value;
             listing.Year = Int32.Parse(listing.Attributes.Single(a => a.Name == "year").Value);
-            //listing.Mileage_Metric = listing.Attributes.Single(a => a.Name == "mileage_metric").Value;
+            listing.Mileage_Metric = listing.Attributes.Where(a => a.Name == "mileage_metric").Select(a => a.Value).SingleOrDefault();
             //listing.EngineSize = Decimal.Parse(listing.Attributes.Single(a => a.Name == "engine").Value);
             //listing.FuelType = listing.Attributes.Single(a => a.Name == "fuelType").Value;
 

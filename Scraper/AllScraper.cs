@@ -17,7 +17,7 @@ namespace Scraper
     {
         public void LoadCarzoneFromJson()
         {
-            var carzoneApi = new CarzoneApi();
+            var carzoneApi = new CarzoneApi(new Requests.WebRequester());
             var cache = new Cache();
 
             var dumpFiles = Directory.GetFiles(@"C:\dev\cars\Scraper.Test\bin\Debug", "jsondump*");
@@ -58,7 +58,7 @@ namespace Scraper
 
         public void UpdateCarzoneEntries()
         {
-            var carzoneApi = new CarzoneApi();
+            var carzoneApi = new CarzoneApi(new Requests.WebRequester());
 
             using (var context = new CarsContext())
             {
@@ -88,7 +88,7 @@ namespace Scraper
 
         public void LoadCarsIrelandFromJson()
         {
-            var carsIrelandApi = new CarsIrelandApi();
+            var carsIrelandApi = new CarsIrelandApi(new Requests.WebRequester());
             var cache = new Cache();
             var dumpFiles = Directory.GetFiles(@"C:\dev\cars\Scraper.Test\bin\Debug", "carsirelandjsondump*");
 

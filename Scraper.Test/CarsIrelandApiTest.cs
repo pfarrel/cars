@@ -13,7 +13,7 @@ namespace Scraper.Test
     [TestClass]
     public class CarsIrelandApiTest
     {
-        CarsIrelandApi api = new CarsIrelandApi();
+        CarsIrelandApi api = new CarsIrelandApi(new Requests.WebRequester());
 
         [TestMethod]
         public void GetListingsStrings_LooksRight()
@@ -67,7 +67,7 @@ namespace Scraper.Test
         {
             for (int i = from; i < to; i++)
             {
-                var apilocal = new CarsIrelandApi();
+                var apilocal = new CarsIrelandApi(new Requests.WebRequester());
                 var theString = apilocal.GetListingsString(i);
                 using (var tw = File.CreateText(string.Format("carsirelandjsondump{0}.json", i)))
                 {

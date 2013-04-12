@@ -11,13 +11,13 @@ namespace Scraper.Test
     [TestClass]
     public class CarzoneApiTest
     {
-        CarzoneApi api = new CarzoneApi();
+        CarzoneApi api = new CarzoneApi(new Requests.WebRequester());
 
         [TestMethod]
         public void GetListingsStrings_LooksRight()
         {
-            var responseString = api.GetListingsStrings(1, 1);
-            Assert.IsTrue(responseString.Contains("vehicle"));
+            var responseStrings = api.GetListingsStrings(1, 1);
+            Assert.IsTrue(responseStrings.First().Contains("vehicle"));
         }
 
         [TestMethod]
@@ -48,13 +48,13 @@ namespace Scraper.Test
         [Ignore]
         public void GetListings_SaveApiOutput()
         {
-            var strings = api.GetListingsStrings(1, int.MaxValue).ToList();
+            var strings = api.GetListingsStrings(1, 20).ToList();
 
             for (int i = 0; i < strings.Count(); i++)
             {
                 using (var tw = File.CreateText(string.Format("jsondump{0}.json", i)))
                 {
-                    tw.Write(strings[i]);
+                    //tw.Write(strings[i]);
                 }
             }
         }
@@ -63,7 +63,7 @@ namespace Scraper.Test
         public void GetDetails()
         {
             var details = api.GetListingDetails(34113630340792500);
-            Assert.AreEqual(40000, details.VehicleKm);
+            Assert.AreEqual(64374, details.VehicleKm);
         }
     }
 }
